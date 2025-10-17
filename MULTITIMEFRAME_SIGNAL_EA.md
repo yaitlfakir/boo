@@ -9,31 +9,29 @@ This Expert Advisor (EA) analyzes multiple timeframes (1-minute, 5-minute, and 1
 A SELL signal is displayed when ALL of the following conditions are true:
 
 **1-Minute Timeframe:**
-- Stochastic Oscillator (%K=19, %D=7, slowing=1) value is above 50
-- Stochastic Main line is greater than Signal line
-- Moving Average 3 is less than Moving Average 9
+- Moving Average 3 crosses above Moving Average 9 (MA3 was below MA9 in previous candle, now above)
+- Stochastic Oscillator (%K=19, %D=7, slowing=1) signal line value is above 80
+- Stochastic Main line is less than Signal line
 
 **5-Minute Timeframe:**
-- Stochastic Oscillator (%K=19, %D=3, slowing=1) Main line is greater than Signal line
-- Moving Average 3 is less than Moving Average 9
+- Stochastic Oscillator (%K=19, %D=3, slowing=1) Main line is less than Signal line
 
 **15-Minute Timeframe:**
-- Moving Average 3 is less than Moving Average 9
+- Stochastic Oscillator (%K=19, %D=3, slowing=1) Main line is less than Signal line
 
 ### BUY Signal Requirements
 A BUY signal is displayed when ALL of the following conditions are true:
 
 **1-Minute Timeframe:**
-- Stochastic Oscillator (%K=19, %D=7, slowing=1) value is below 30
-- Stochastic Main line is smaller than Signal line
-- Moving Average 3 is greater than Moving Average 9
+- Moving Average 3 crosses below Moving Average 9 (MA3 was above MA9 in previous candle, now below)
+- Stochastic Oscillator (%K=19, %D=7, slowing=1) signal line value is below 30
+- Stochastic Main line is greater than Signal line
 
 **5-Minute Timeframe:**
-- Stochastic Oscillator (%K=19, %D=3, slowing=1) Main line is less than Signal line
-- Moving Average 3 is greater than Moving Average 9
+- Stochastic Oscillator (%K=19, %D=3, slowing=1) Main line is greater than Signal line
 
 **15-Minute Timeframe:**
-- Moving Average 3 is greater than Moving Average 9
+- Stochastic Oscillator (%K=19, %D=3, slowing=1) Main line is greater than Signal line
 
 ## Features
 
@@ -99,16 +97,15 @@ A BUY signal is displayed when ALL of the following conditions are true:
 
 **5-Minute Timeframe:**
 - Stochastic Oscillator: %K period = 19, %D period = 3, Slowing = 1
-- Simple Moving Average: Period 3
-- Simple Moving Average: Period 9
 
 **15-Minute Timeframe:**
-- Simple Moving Average: Period 3
-- Simple Moving Average: Period 9
+- Stochastic Oscillator: %K period = 19, %D period = 3, Slowing = 1
 
 ### Signal Generation Logic
 - Signals are checked on every new bar formation
 - All conditions must be met simultaneously across all timeframes
+- SELL signals require MA crossover upward on M1 with stochastic signal > 80
+- BUY signals require MA crossover downward on M1 with stochastic signal < 30
 - Only one alert is sent per signal occurrence
 - Arrows are drawn directly on the chart at the signal bar
 

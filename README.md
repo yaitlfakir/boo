@@ -165,14 +165,14 @@ This EA analyzes multiple timeframes (1-minute, 5-minute, and 15-minute) to gene
 ### Signal Conditions
 
 **SELL Signal:**
-- 1min: Stochastic (%K=19, %D=7) > 50, Main > Signal, MA(3) < MA(9)
-- 5min: Stochastic (%K=19, %D=3), Main > Signal, MA(3) < MA(9)
-- 15min: MA(3) < MA(9)
+- 1min: MA(3) crosses above MA(9), Stochastic (%K=19, %D=7) signal > 80, Main < Signal
+- 5min: Stochastic (%K=19, %D=3) Main < Signal
+- 15min: Stochastic (%K=19, %D=3) Main < Signal
 
 **BUY Signal:**
-- 1min: Stochastic (%K=19, %D=7) < 30, Main < Signal, MA(3) > MA(9)
-- 5min: Stochastic (%K=19, %D=3), Main < Signal, MA(3) > MA(9)
-- 15min: MA(3) > MA(9)
+- 1min: MA(3) crosses below MA(9), Stochastic (%K=19, %D=7) signal < 30, Main > Signal
+- 5min: Stochastic (%K=19, %D=3) Main > Signal
+- 15min: Stochastic (%K=19, %D=3) Main > Signal
 
 ### Installation
 Same as ScalpingEA - copy to MQL5/Experts/ folder and refresh Navigator.
