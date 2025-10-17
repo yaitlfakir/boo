@@ -24,12 +24,8 @@ int handle_MA3_M1;        // MA 3 handle for 1-minute
 int handle_MA9_M1;        // MA 9 handle for 1-minute
 
 int handle_Stoch_M5;      // Stochastic handle for 5-minute
-int handle_MA3_M5;        // MA 3 handle for 5-minute
-int handle_MA9_M5;        // MA 9 handle for 5-minute
 
 int handle_Stoch_M15;     // Stochastic handle for 15-minute
-int handle_MA3_M15;       // MA 3 handle for 15-minute
-int handle_MA9_M15;       // MA 9 handle for 15-minute
 
 datetime lastBarTime = 0;
 datetime lastAlertTime = 0;
@@ -47,18 +43,14 @@ int OnInit()
    
    //--- Initialize indicators for 5-minute timeframe
    handle_Stoch_M5 = iStochastic(_Symbol, PERIOD_M5, 19, 3, 1, MODE_SMA, STO_LOWHIGH);
-   handle_MA3_M5 = iMA(_Symbol, PERIOD_M5, 3, 0, MODE_SMA, PRICE_CLOSE);
-   handle_MA9_M5 = iMA(_Symbol, PERIOD_M5, 9, 0, MODE_SMA, PRICE_CLOSE);
    
    //--- Initialize indicators for 15-minute timeframe
    handle_Stoch_M15 = iStochastic(_Symbol, PERIOD_M15, 19, 3, 1, MODE_SMA, STO_LOWHIGH);
-   handle_MA3_M15 = iMA(_Symbol, PERIOD_M15, 3, 0, MODE_SMA, PRICE_CLOSE);
-   handle_MA9_M15 = iMA(_Symbol, PERIOD_M15, 9, 0, MODE_SMA, PRICE_CLOSE);
    
    //--- Check if indicators are created successfully
    if(handle_Stoch_M1 == INVALID_HANDLE || handle_MA3_M1 == INVALID_HANDLE || handle_MA9_M1 == INVALID_HANDLE ||
-      handle_Stoch_M5 == INVALID_HANDLE || handle_MA3_M5 == INVALID_HANDLE || handle_MA9_M5 == INVALID_HANDLE ||
-      handle_Stoch_M15 == INVALID_HANDLE || handle_MA3_M15 == INVALID_HANDLE || handle_MA9_M15 == INVALID_HANDLE)
+      handle_Stoch_M5 == INVALID_HANDLE ||
+      handle_Stoch_M15 == INVALID_HANDLE)
    {
       Print("Error creating indicators");
       return(INIT_FAILED);
@@ -79,12 +71,8 @@ void OnDeinit(const int reason)
    if(handle_MA9_M1 != INVALID_HANDLE) IndicatorRelease(handle_MA9_M1);
    
    if(handle_Stoch_M5 != INVALID_HANDLE) IndicatorRelease(handle_Stoch_M5);
-   if(handle_MA3_M5 != INVALID_HANDLE) IndicatorRelease(handle_MA3_M5);
-   if(handle_MA9_M5 != INVALID_HANDLE) IndicatorRelease(handle_MA9_M5);
    
    if(handle_Stoch_M15 != INVALID_HANDLE) IndicatorRelease(handle_Stoch_M15);
-   if(handle_MA3_M15 != INVALID_HANDLE) IndicatorRelease(handle_MA3_M15);
-   if(handle_MA9_M15 != INVALID_HANDLE) IndicatorRelease(handle_MA9_M15);
    
    Print("MultiTimeframeSignalEA deinitialized");
 }
@@ -106,10 +94,8 @@ void OnTick()
    double ma3_m1[], ma9_m1[];
    
    double stoch_main_m5[], stoch_signal_m5[];
-   double ma3_m5[], ma9_m5[];
    
    double stoch_main_m15[], stoch_signal_m15[];
-   double ma3_m15[], ma9_m15[];
    
    ArraySetAsSeries(stoch_main_m1, true);
    ArraySetAsSeries(stoch_signal_m1, true);
@@ -118,13 +104,9 @@ void OnTick()
    
    ArraySetAsSeries(stoch_main_m5, true);
    ArraySetAsSeries(stoch_signal_m5, true);
-   ArraySetAsSeries(ma3_m5, true);
-   ArraySetAsSeries(ma9_m5, true);
    
    ArraySetAsSeries(stoch_main_m15, true);
    ArraySetAsSeries(stoch_signal_m15, true);
-   ArraySetAsSeries(ma3_m15, true);
-   ArraySetAsSeries(ma9_m15, true);
    
    //--- Copy indicator data for 1-minute
    if(CopyBuffer(handle_Stoch_M1, 0, 0, 2, stoch_main_m1) < 2) return;
@@ -135,14 +117,10 @@ void OnTick()
    //--- Copy indicator data for 5-minute
    if(CopyBuffer(handle_Stoch_M5, 0, 0, 2, stoch_main_m5) < 2) return;
    if(CopyBuffer(handle_Stoch_M5, 1, 0, 2, stoch_signal_m5) < 2) return;
-   if(CopyBuffer(handle_MA3_M5, 0, 0, 2, ma3_m5) < 2) return;
-   if(CopyBuffer(handle_MA9_M5, 0, 0, 2, ma9_m5) < 2) return;
    
    //--- Copy indicator data for 15-minute
    if(CopyBuffer(handle_Stoch_M15, 0, 0, 2, stoch_main_m15) < 2) return;
    if(CopyBuffer(handle_Stoch_M15, 1, 0, 2, stoch_signal_m15) < 2) return;
-   if(CopyBuffer(handle_MA3_M15, 0, 0, 2, ma3_m15) < 2) return;
-   if(CopyBuffer(handle_MA9_M15, 0, 0, 2, ma9_m15) < 2) return;
    
    //--- Get current price data
    double high = iHigh(_Symbol, PERIOD_CURRENT, 0);
