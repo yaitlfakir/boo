@@ -27,6 +27,7 @@ int handle_Stoch_M5;      // Stochastic handle for 5-minute
 int handle_MA3_M5;        // MA 3 handle for 5-minute
 int handle_MA9_M5;        // MA 9 handle for 5-minute
 
+int handle_Stoch_M15;     // Stochastic handle for 15-minute
 int handle_MA3_M15;       // MA 3 handle for 15-minute
 int handle_MA9_M15;       // MA 9 handle for 15-minute
 
@@ -50,13 +51,14 @@ int OnInit()
    handle_MA9_M5 = iMA(_Symbol, PERIOD_M5, 9, 0, MODE_SMA, PRICE_CLOSE);
    
    //--- Initialize indicators for 15-minute timeframe
+   handle_Stoch_M15 = iStochastic(_Symbol, PERIOD_M15, 19, 3, 1, MODE_SMA, STO_LOWHIGH);
    handle_MA3_M15 = iMA(_Symbol, PERIOD_M15, 3, 0, MODE_SMA, PRICE_CLOSE);
    handle_MA9_M15 = iMA(_Symbol, PERIOD_M15, 9, 0, MODE_SMA, PRICE_CLOSE);
    
    //--- Check if indicators are created successfully
    if(handle_Stoch_M1 == INVALID_HANDLE || handle_MA3_M1 == INVALID_HANDLE || handle_MA9_M1 == INVALID_HANDLE ||
       handle_Stoch_M5 == INVALID_HANDLE || handle_MA3_M5 == INVALID_HANDLE || handle_MA9_M5 == INVALID_HANDLE ||
-      handle_MA3_M15 == INVALID_HANDLE || handle_MA9_M15 == INVALID_HANDLE)
+      handle_Stoch_M15 == INVALID_HANDLE || handle_MA3_M15 == INVALID_HANDLE || handle_MA9_M15 == INVALID_HANDLE)
    {
       Print("Error creating indicators");
       return(INIT_FAILED);
@@ -80,6 +82,7 @@ void OnDeinit(const int reason)
    if(handle_MA3_M5 != INVALID_HANDLE) IndicatorRelease(handle_MA3_M5);
    if(handle_MA9_M5 != INVALID_HANDLE) IndicatorRelease(handle_MA9_M5);
    
+   if(handle_Stoch_M15 != INVALID_HANDLE) IndicatorRelease(handle_Stoch_M15);
    if(handle_MA3_M15 != INVALID_HANDLE) IndicatorRelease(handle_MA3_M15);
    if(handle_MA9_M15 != INVALID_HANDLE) IndicatorRelease(handle_MA9_M15);
    
@@ -105,6 +108,7 @@ void OnTick()
    double stoch_main_m5[], stoch_signal_m5[];
    double ma3_m5[], ma9_m5[];
    
+   double stoch_main_m15[], stoch_signal_m15[];
    double ma3_m15[], ma9_m15[];
    
    ArraySetAsSeries(stoch_main_m1, true);
@@ -117,6 +121,8 @@ void OnTick()
    ArraySetAsSeries(ma3_m5, true);
    ArraySetAsSeries(ma9_m5, true);
    
+   ArraySetAsSeries(stoch_main_m15, true);
+   ArraySetAsSeries(stoch_signal_m15, true);
    ArraySetAsSeries(ma3_m15, true);
    ArraySetAsSeries(ma9_m15, true);
    
@@ -133,6 +139,8 @@ void OnTick()
    if(CopyBuffer(handle_MA9_M5, 0, 0, 2, ma9_m5) < 2) return;
    
    //--- Copy indicator data for 15-minute
+   if(CopyBuffer(handle_Stoch_M15, 0, 0, 2, stoch_main_m15) < 2) return;
+   if(CopyBuffer(handle_Stoch_M15, 1, 0, 2, stoch_signal_m15) < 2) return;
    if(CopyBuffer(handle_MA3_M15, 0, 0, 2, ma3_m15) < 2) return;
    if(CopyBuffer(handle_MA9_M15, 0, 0, 2, ma9_m15) < 2) return;
    
@@ -141,29 +149,45 @@ void OnTick()
    double low = iLow(_Symbol, PERIOD_CURRENT, 0);
    
    //--- Check for SELL signal
+   // Conditions:
+   // 1. M1: MA(3) was < MA(9) in previous candle [1] AND MA(3) > MA(9) in current candle [0] (crossover up)
+   // 2. M1: Stochastic signal value > 80 AND stochastic main < signal
+   // 3. M5: Stochastic main < signal
+   // 4. M15: Stochastic main < signal
    bool sellSignal = false;
-   if(stoch_main_m1[0] > 50 && stoch_main_m1[0] > stoch_signal_m1[0] && ma3_m1[0] < ma9_m1[0])
+   if(ma3_m1[1] < ma9_m1[1] && ma3_m1[0] > ma9_m1[0])  // MA crossover up on M1
    {
-      if(stoch_main_m5[0] > stoch_signal_m5[0] && ma3_m5[0] < ma9_m5[0])
+      if(stoch_signal_m1[0] > 80 && stoch_main_m1[0] < stoch_signal_m1[0])  // Stoch conditions on M1
       {
-         if(ma3_m15[0] < ma9_m15[0])
+         if(stoch_main_m5[0] < stoch_signal_m5[0])  // Stoch on M5
          {
-            sellSignal = true;
-            DrawArrow("Sell_" + TimeToString(currentBarTime), currentBarTime, high, 234, SellArrowColor);
+            if(stoch_main_m15[0] < stoch_signal_m15[0])  // Stoch on M15
+            {
+               sellSignal = true;
+               DrawArrow("Sell_" + TimeToString(currentBarTime), currentBarTime, high, 234, SellArrowColor);
+            }
          }
       }
    }
    
    //--- Check for BUY signal
+   // Conditions:
+   // 1. M1: MA(3) was > MA(9) in previous candle [1] AND MA(3) < MA(9) in current candle [0] (crossover down)
+   // 2. M1: Stochastic signal value < 30 AND stochastic main > signal
+   // 3. M5: Stochastic main > signal
+   // 4. M15: Stochastic main > signal
    bool buySignal = false;
-   if(stoch_main_m1[0] < 30 && stoch_main_m1[0] < stoch_signal_m1[0] && ma3_m1[0] > ma9_m1[0])
+   if(ma3_m1[1] > ma9_m1[1] && ma3_m1[0] < ma9_m1[0])  // MA crossover down on M1
    {
-      if(stoch_main_m5[0] < stoch_signal_m5[0] && ma3_m5[0] > ma9_m5[0])
+      if(stoch_signal_m1[0] < 30 && stoch_main_m1[0] > stoch_signal_m1[0])  // Stoch conditions on M1
       {
-         if(ma3_m15[0] > ma9_m15[0])
+         if(stoch_main_m5[0] > stoch_signal_m5[0])  // Stoch on M5
          {
-            buySignal = true;
-            DrawArrow("Buy_" + TimeToString(currentBarTime), currentBarTime, low, 233, BuyArrowColor);
+            if(stoch_main_m15[0] > stoch_signal_m15[0])  // Stoch on M15
+            {
+               buySignal = true;
+               DrawArrow("Buy_" + TimeToString(currentBarTime), currentBarTime, low, 233, BuyArrowColor);
+            }
          }
       }
    }
