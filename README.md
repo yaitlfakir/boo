@@ -1,10 +1,22 @@
-# MetaTrader 5 Scalping Expert Advisor
+# MetaTrader 5 Expert Advisors Collection
 
-An automated trading Expert Advisor (EA) for MetaTrader 5 that uses scalping strategies with comprehensive risk management.
+A collection of Expert Advisors (EAs) for MetaTrader 5, including automated trading and signal generation tools.
 
-## Features
+## Available Expert Advisors
 
-### Trading Strategy
+### 1. ScalpingEA - Automated Scalping with Risk Management
+An automated trading EA that uses scalping strategies with comprehensive risk management.
+
+### 2. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
+A signal-generating EA that analyzes multiple timeframes to display buy and sell signals on the chart.
+
+---
+
+## ScalpingEA
+
+### Features
+
+#### Trading Strategy
 - **Dual Moving Average Crossover**: Uses Fast EMA (5) and Slow EMA (20) for trend identification
 - **RSI Confirmation**: RSI indicator to confirm oversold/overbought conditions
 - **Scalping Approach**: Quick entry and exit for small, consistent profits
@@ -17,7 +29,7 @@ An automated trading Expert Advisor (EA) for MetaTrader 5 that uses scalping str
 - **Spread Filter**: Avoids trading during high spread conditions
 - **Time Filter**: Restricts trading to optimal hours
 
-## Installation
+### Installation
 
 1. Open MetaTrader 5
 2. Click on `File` → `Open Data Folder`
@@ -26,16 +38,16 @@ An automated trading Expert Advisor (EA) for MetaTrader 5 that uses scalping str
 5. Restart MetaTrader 5 or click `Refresh` in the Navigator panel
 6. The EA should appear under "Expert Advisors" in the Navigator
 
-## Configuration
+### Configuration
 
-### Trading Parameters
+#### Trading Parameters
 - **FastMA_Period** (default: 5): Period for fast moving average
 - **SlowMA_Period** (default: 20): Period for slow moving average
 - **RSI_Period** (default: 14): RSI calculation period
 - **RSI_Oversold** (default: 30): RSI level for oversold condition
 - **RSI_Overbought** (default: 70): RSI level for overbought condition
 
-### Risk Management
+#### Risk Management
 - **RiskPercent** (default: 1.0%): Risk per trade as percentage of account balance
 - **StopLossPips** (default: 15.0): Stop loss distance in pips
 - **TakeProfitPips** (default: 25.0): Take profit distance in pips
@@ -44,18 +56,18 @@ An automated trading Expert Advisor (EA) for MetaTrader 5 that uses scalping str
 - **TrailingStopPips** (default: 10.0): Distance of trailing stop from current price
 - **TrailingStepPips** (default: 5.0): Minimum price movement to adjust trailing stop
 
-### Position Management
+#### Position Management
 - **MagicNumber** (default: 123456): Unique identifier for EA's trades
 - **TradeComment** (default: "ScalpEA"): Comment added to trades
 - **MaxLotSize** (default: 10.0): Maximum position size
 - **MinLotSize** (default: 0.01): Minimum position size
 
-### Trading Hours
+#### Trading Hours
 - **UseTimeFilter** (default: true): Enable/disable time-based trading
 - **StartHour** (default: 8): Start trading hour (server time)
 - **EndHour** (default: 20): End trading hour (server time)
 
-## Usage
+### Usage
 
 1. **Attach to Chart**:
    - Open a currency pair chart (recommended: EURUSD, GBPUSD, USDJPY)
@@ -76,7 +88,7 @@ An automated trading Expert Advisor (EA) for MetaTrader 5 that uses scalping str
    - Review open positions in the "Trade" tab
    - Monitor account history in the "History" tab
 
-## Risk Warnings
+### Risk Warnings
 
 ⚠️ **Important Disclaimers**:
 - Trading forex carries a high level of risk and may not be suitable for all investors
@@ -86,27 +98,27 @@ An automated trading Expert Advisor (EA) for MetaTrader 5 that uses scalping str
 - Use the Strategy Tester in MetaTrader 5 to backtest the strategy
 - The EA is provided as-is without any guarantees
 
-## Recommended Settings
+### Recommended Settings
 
-### Conservative (Low Risk)
+#### Conservative (Low Risk)
 - RiskPercent: 0.5%
 - StopLossPips: 20
 - TakeProfitPips: 30
 - MaxSpreadPips: 1.5
 
-### Moderate (Medium Risk)
+#### Moderate (Medium Risk)
 - RiskPercent: 1.0%
 - StopLossPips: 15
 - TakeProfitPips: 25
 - MaxSpreadPips: 2.0
 
-### Aggressive (High Risk)
+#### Aggressive (High Risk)
 - RiskPercent: 2.0%
 - StopLossPips: 10
 - TakeProfitPips: 20
 - MaxSpreadPips: 2.5
 
-## Strategy Testing
+### Strategy Testing
 
 To backtest the EA:
 1. Press Ctrl+R to open Strategy Tester
@@ -118,7 +130,7 @@ To backtest the EA:
 7. Click "Start" to run the backtest
 8. Review results in the "Results" and "Graph" tabs
 
-## Troubleshooting
+### Troubleshooting
 
 **EA not trading:**
 - Check that AutoTrading is enabled
@@ -136,6 +148,40 @@ To backtest the EA:
 - Verify symbol is available for trading
 - Ensure broker allows Expert Advisors
 
+---
+
+## MultiTimeframeSignalEA
+
+### Overview
+This EA analyzes multiple timeframes (1-minute, 5-minute, and 15-minute) to generate buy and sell signals on the chart using Stochastic Oscillator and Moving Average analysis.
+
+### Features
+- Multi-timeframe analysis (M1, M5, M15)
+- Stochastic oscillator with customized parameters per timeframe
+- Moving average crossover analysis
+- Visual signal display with colored arrows
+- Alert system (audio, push notifications, email)
+
+### Signal Conditions
+
+**SELL Signal:**
+- 1min: Stochastic (%K=19, %D=7) > 50, Main > Signal, MA(3) < MA(9)
+- 5min: Stochastic (%K=19, %D=3), Main > Signal, MA(3) < MA(9)
+- 15min: MA(3) < MA(9)
+
+**BUY Signal:**
+- 1min: Stochastic (%K=19, %D=7) < 30, Main < Signal, MA(3) > MA(9)
+- 5min: Stochastic (%K=19, %D=3), Main < Signal, MA(3) > MA(9)
+- 15min: MA(3) > MA(9)
+
+### Installation
+Same as ScalpingEA - copy to MQL5/Experts/ folder and refresh Navigator.
+
+### Documentation
+See [MULTITIMEFRAME_SIGNAL_EA.md](MULTITIMEFRAME_SIGNAL_EA.md) for detailed documentation.
+
+---
+
 ## Support & Contributions
 
 This is an open-source project. Feel free to:
@@ -146,4 +192,4 @@ This is an open-source project. Feel free to:
 
 ## License
 
-This Expert Advisor is provided for educational and research purposes.
+These Expert Advisors are provided for educational and research purposes.
