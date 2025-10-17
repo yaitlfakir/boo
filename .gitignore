@@ -1,0 +1,13 @@
+# MetaTrader 5 compiled files
+*.ex5
+
+# Logs and temporary files
+*.log
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
