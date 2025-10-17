@@ -34,8 +34,8 @@ This guide explains how to test and verify that the MultiTimeframeSignalEA is wo
 
 ### 4. Indicator Loading Test
 The EA uses the following indicators internally:
-- 1-minute: Stochastic (%K=19, %D=7, slowing=1), MA(3), MA(9)
-- 5-minute: Stochastic (%K=19, %D=3, slowing=1), MA(3), MA(9)
+- 1-minute: Stochastic (%K=19, %D=7, Slowing=1), MA(3), MA(9)
+- 5-minute: Stochastic (%K=19, %D=3, Slowing=1), MA(3), MA(9)
 - 15-minute: MA(3), MA(9)
 
 To verify indicators are loaded:
