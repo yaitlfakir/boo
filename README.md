@@ -10,6 +10,9 @@ An automated trading EA that uses scalping strategies with comprehensive risk ma
 ### 2. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
 A signal-generating EA that analyzes multiple timeframes to display buy and sell signals on the chart.
 
+### 3. TrailingManager - Comprehensive Trading & Risk Management
+An advanced EA that combines automatic position opening with sophisticated trailing stop, break-even, and trailing take-profit management. Features comprehensive risk controls including daily loss limits, position limits, and intelligent trade entry.
+
 ---
 
 ## ScalpingEA
@@ -179,6 +182,60 @@ Same as ScalpingEA - copy to MQL5/Experts/ folder and refresh Navigator.
 
 ### Documentation
 See [MULTITIMEFRAME_SIGNAL_EA.md](MULTITIMEFRAME_SIGNAL_EA.md) for detailed documentation.
+
+---
+
+## TrailingManager
+
+### Overview
+An advanced EA that automatically opens and manages positions with comprehensive risk management. It combines automatic trading based on EMA crossover and RSI signals with sophisticated trailing stop, break-even, and trailing take-profit management.
+
+### Key Features
+
+#### Automatic Trading
+- EMA Crossover Strategy with RSI confirmation
+- Smart entry logic with multiple filter conditions
+- Automatic position opening based on market conditions
+
+#### Risk Management
+- Position sizing based on risk percentage
+- Maximum concurrent positions limit (default: 3)
+- Daily loss limit protection (stops trading if limit reached)
+- Spread filter to avoid high-cost entries
+- Trading hours restriction
+
+#### Position Management
+- Initial SL/TP placement
+- Break-even functionality
+- Trailing stop to lock in profits
+- Trailing take-profit to maximize gains
+- Broker compliance (respects stop levels and freeze levels)
+
+### Configuration Highlights
+
+#### Trading Parameters
+- **InpAutoTrade** (default: true): Enable/disable automatic position opening
+- **InpFastEMA_Period** (default: 5): Fast moving average period
+- **InpSlowEMA_Period** (default: 20): Slow moving average period
+- **InpRSI_Period** (default: 14): RSI indicator period
+
+#### Risk Settings
+- **InpRiskPercent** (default: 1.0%): Risk per trade
+- **InpMaxOpenPositions** (default: 3): Maximum simultaneous positions
+- **InpMaxDailyLossPercent** (default: 5.0%): Daily loss limit
+- **InpMaxSpreadPips** (default: 2.0): Maximum allowed spread
+
+#### Position Management
+- **InpInitialSL_Points** (default: 150): Initial stop loss in points
+- **InpInitialTP_Points** (default: 250): Initial take profit in points
+- **InpBE_Trigger_Points** (default: 500): Break-even trigger level
+- **InpTS_Distance_Points** (default: 150): Trailing stop distance
+
+### Installation
+Same as ScalpingEA - copy to MQL5/Experts/ folder and refresh Navigator.
+
+### Documentation
+See [TRAILING_MANAGER.md](TRAILING_MANAGER.md) for comprehensive documentation.
 
 ---
 
