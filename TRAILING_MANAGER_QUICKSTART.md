@@ -42,9 +42,9 @@ InpSlowEMA_Period = 20
 InpRSI_Period = 14
 
 [Risk Management]
-InpRiskPercent = 0.5%          ← Start with 0.5% risk
+InpRiskPercent = 0.5           ← Start with 0.5% risk
 InpMaxOpenPositions = 2        ← Only 2 positions max
-InpMaxDailyLossPercent = 3.0%  ← Stop if lose 3% in a day
+InpMaxDailyLossPercent = 3.0   ← Stop if lose 3% in a day
 InpMaxSpreadPips = 2.0
 
 [Trading Hours]
@@ -58,7 +58,7 @@ InpInitialTP_Points = 250
 
 [Break-Even]
 InpUseBreakEven = true
-InpBE_Trigger_Points = 300     ← Move to BE after 30 pips profit
+InpBE_Trigger_Points = 300     ← Move to BE after profit reaches 300 points
 InpBE_Offset_Points = 20
 
 [Trailing Stop]
@@ -89,11 +89,11 @@ For each open position:
 - If no SL set, adds initial stop loss
 - If no TP set, adds initial take profit
 
-**Stage 2 - Break-Even (after 30-50 pips profit)**
+**Stage 2 - Break-Even (after 300 points profit)**
 - Moves stop loss to entry price + small offset
 - Locks in zero-loss position
 
-**Stage 3 - Trailing Stop (after 40-60 pips profit)**
+**Stage 3 - Trailing Stop (after 400 points profit)**
 - Stop loss follows price at configured distance
 - Only moves in favorable direction
 - Never loosens
@@ -136,13 +136,13 @@ The EA logs everything to the Experts tab:
 ## Safety Features
 
 ### 1. Daily Loss Limit
-If you lose 3-5% of your starting balance in a day:
+If you lose the configured percentage of your starting balance in a day (default: 5%):
 - ✅ Existing positions continue to be managed
 - ❌ No new positions opened until tomorrow
 - 🔄 Resets automatically at start of new day
 
 ### 2. Maximum Positions
-Can't open more than configured number (default: 2-3):
+Can't open more than configured number (default: 3):
 - Prevents overexposure during volatile markets
 - Reduces correlation risk
 - Limits capital at risk
