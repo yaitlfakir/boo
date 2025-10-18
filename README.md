@@ -13,6 +13,9 @@ A signal-generating EA that analyzes multiple timeframes to display buy and sell
 ### 3. TrailingManager - Comprehensive Trading & Risk Management
 An advanced EA that combines automatic position opening with sophisticated trailing stop, break-even, and trailing take-profit management. Features comprehensive risk controls including daily loss limits, position limits, and intelligent trade entry.
 
+### 4. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
+An automated trading EA that opens SELL positions based on Stochastic Oscillator crossover above 60 level, combined with momentum reversal and Moving Average confirmation.
+
 ---
 
 ## ScalpingEA
@@ -236,6 +239,76 @@ Same as ScalpingEA - copy to MQL5/Experts/ folder and refresh Navigator.
 
 ### Documentation
 See [TRAILING_MANAGER.md](TRAILING_MANAGER.md) for comprehensive documentation.
+
+---
+
+## StochasticSellEA
+
+### Overview
+An automated trading EA that opens SELL positions based on precise Stochastic Oscillator crossover conditions combined with Moving Average confirmation. This EA is designed for traders looking to automate sell signals based on momentum reversal after overbought conditions.
+
+### Trading Strategy
+
+The EA opens SELL positions when ALL of the following conditions are met:
+
+1. **Stochastic Crossover**: Stochastic (%K=14, %D=19, Slowing=9) crosses over the 60 level
+2. **Momentum Reversal**: Main line (%K) crosses below Signal line (%D) - indicating bearish momentum shift
+3. **Trend Confirmation**: MA(33) with shift -9 < MA(19) with shift -9
+
+### Key Features
+
+#### Precise Entry Logic
+- Stochastic Oscillator with customizable parameters (%K=14, %D=19, Slowing=9)
+- Crossover detection at specific level (default: 60)
+- Main/Signal line crossover confirmation
+- Moving Average trend filter with negative shift for forward-looking analysis
+
+#### Risk Management
+- Position sizing based on risk percentage
+- Configurable stop loss and take profit in pips
+- Spread filter to avoid high-cost entries
+- Maximum positions limit
+- Automatic lot size calculation
+
+#### Position Management
+- Only SELL positions (directional strategy)
+- Single or multiple position management
+- Detailed logging of signal conditions
+- Trade tracking with magic number
+
+### Configuration Highlights
+
+#### Stochastic Parameters
+- **Stoch_K_Period** (default: 14): %K period
+- **Stoch_D_Period** (default: 19): %D signal line period
+- **Stoch_Slowing** (default: 9): Slowing factor
+- **Stoch_Level** (default: 60.0): Crossover detection level
+
+#### Moving Average Parameters
+- **MA_Fast_Period** (default: 19): Fast MA period
+- **MA_Slow_Period** (default: 33): Slow MA period
+- **MA_Shift** (default: -9): Shift for forward-looking analysis
+
+#### Risk Settings
+- **RiskPercent** (default: 1.0%): Risk per trade
+- **StopLossPips** (default: 50.0): Stop loss distance
+- **TakeProfitPips** (default: 100.0): Take profit distance
+- **MaxSpreadPips** (default: 3.0): Maximum allowed spread
+- **MaxPositions** (default: 1): Maximum concurrent positions
+
+### Installation
+Same as ScalpingEA - copy to MQL5/Experts/ folder and refresh Navigator.
+
+### Documentation
+See [STOCHASTIC_SELL_EA.md](STOCHASTIC_SELL_EA.md) for comprehensive documentation.
+
+### Usage Notes
+- This EA is **directional** - it only opens SELL positions
+- Signals may be rare as all three conditions must align
+- The negative MA shift provides forward-looking trend analysis
+- Best suited for ranging or topping markets
+- Always backtest on historical data before live trading
+- Consider market conditions when using a sell-only strategy
 
 ---
 
