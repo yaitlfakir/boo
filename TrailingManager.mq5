@@ -138,6 +138,14 @@ void OnTick()
   const string sym = _Symbol;
   const double point = SymbolInfoDouble(sym, SYMBOL_POINT);
   const int digits = (int)SymbolInfoInteger(sym, SYMBOL_DIGITS);
+  
+  // Safety check for invalid symbol data
+  if(point == 0)
+  {
+    if(InpLogActions)
+      Print("Error: Invalid symbol point value");
+    return;
+  }
 
   // Check and reset daily loss tracking
   CheckDailyReset();
@@ -387,11 +395,17 @@ double CalculateLotSize(string sym, double stopLossDistance)
   if(stopLossPoints == 0)
     return SymbolInfoDouble(sym, SYMBOL_VOLUME_MIN);
   
-  double lotSize = riskAmount / (stopLossPoints * tickValue / tickSize);
+  // Protect against division by zero
+  double denominator = stopLossPoints * tickValue / tickSize;
+  if(denominator == 0)
+    return SymbolInfoDouble(sym, SYMBOL_VOLUME_MIN);
+  
+  double lotSize = riskAmount / denominator;
   
   // Normalize lot size
   double lotStep = SymbolInfoDouble(sym, SYMBOL_VOLUME_STEP);
-  lotSize = MathFloor(lotSize / lotStep) * lotStep;
+  if(lotStep > 0)
+    lotSize = MathFloor(lotSize / lotStep) * lotStep;
   
   // Apply limits
   double minLot = SymbolInfoDouble(sym, SYMBOL_VOLUME_MIN);
