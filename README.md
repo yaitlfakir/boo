@@ -4,17 +4,161 @@ A collection of Expert Advisors (EAs) for MetaTrader 5, including automated trad
 
 ## Available Expert Advisors
 
-### 1. ScalpingEA - Automated Scalping with Risk Management
+### 1. BitcoinTradingEA - Automated Bitcoin Trading Robot ⭐ NEW
+An automated trading EA specifically designed for Bitcoin (BTCUSD) with cryptocurrency-optimized volatility management, dynamic stops, and trend filtering.
+
+### 2. ScalpingEA - Automated Scalping with Risk Management
 An automated trading EA that uses scalping strategies with comprehensive risk management.
 
-### 2. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
+### 3. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
 A signal-generating EA that analyzes multiple timeframes to display buy and sell signals on the chart.
 
-### 3. TrailingManager - Comprehensive Trading & Risk Management
+### 4. TrailingManager - Comprehensive Trading & Risk Management
 An advanced EA that combines automatic position opening with sophisticated trailing stop, break-even, and trailing take-profit management. Features comprehensive risk controls including daily loss limits, position limits, and intelligent trade entry.
 
-### 4. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
+### 5. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
 An automated trading EA that opens SELL positions based on Stochastic Oscillator crossover above 60 level, combined with momentum reversal and Moving Average confirmation.
+
+---
+
+## BitcoinTradingEA
+
+### Overview
+An automated trading Expert Advisor specifically designed for Bitcoin (BTCUSD) trading on MetaTrader 5. Unlike traditional forex EAs, this robot is optimized for cryptocurrency's unique characteristics including high volatility, 24/7 trading, and larger price swings.
+
+### Features
+
+#### Bitcoin-Optimized Trading Strategy
+- **EMA Crossover System**: Uses 12/26/9 EMA periods (MACD-style) for trend identification
+- **RSI Confirmation**: Adjusted levels (35/65) for Bitcoin's higher volatility
+- **ATR-Based Dynamic SL/TP**: Automatically adapts stops to current market volatility
+- **Volatility Filter**: Only trades when ATR is within optimal range (100-2000 pips)
+- **Trend Strength Filter**: ADX indicator ensures trades only in trending markets
+
+#### Advanced Risk Management
+- **Dynamic Position Sizing**: Calculates lot size based on account balance and risk percentage
+- **Volatility-Adjusted Stops**: Uses ATR multiplier for intelligent stop placement
+- **Spread Filter**: Avoids trading during high spread conditions (max 50 pips)
+- **Maximum Position Limit**: Controls exposure with position count limits
+- **Trailing Stop**: Protects profits as Bitcoin price moves favorably (300 pips trail distance)
+
+#### Key Differences from Forex EAs
+- **Larger Stop Losses**: 500-1000 pips vs 15-50 in forex
+- **Dynamic Stops**: ATR-based sizing adapts to Bitcoin's volatility
+- **Higher Spread Tolerance**: 50 pips vs 2-3 in forex
+- **24/7 Trading**: No time filter by default (can be enabled)
+- **Volatility Management**: Comprehensive ATR-based filters
+
+### Installation
+
+1. Open MetaTrader 5
+2. Click `File` → `Open Data Folder`
+3. Navigate to `MQL5/Experts/`
+4. Copy `BitcoinTradingEA.mq5` to this folder
+5. Restart MetaTrader 5 or click `Refresh` in Navigator
+6. The EA appears under "Expert Advisors" in Navigator
+
+### Quick Start Configuration
+
+#### Conservative (Recommended for Beginners)
+- **RiskPercent**: 0.5%
+- **UseDynamicSLTP**: true
+- **ATR_Multiplier**: 2.5
+- **MaxOpenPositions**: 1
+- **Timeframe**: H4 (4 hours)
+
+#### Moderate (Balanced Risk)
+- **RiskPercent**: 1.0%
+- **UseDynamicSLTP**: true
+- **ATR_Multiplier**: 2.0
+- **MaxOpenPositions**: 1
+- **Timeframe**: H1 (1 hour)
+
+#### Aggressive (High Risk - Experienced Traders Only)
+- **RiskPercent**: 2.0%
+- **UseDynamicSLTP**: true
+- **ATR_Multiplier**: 1.5
+- **MaxOpenPositions**: 2
+- **Timeframe**: H1 (1 hour)
+
+### Usage
+
+1. **Attach to Chart**:
+   - Open BTCUSD chart (ensure your broker offers Bitcoin)
+   - Recommended timeframes: **H1** (1 hour) or **H4** (4 hours)
+   - Drag and drop BitcoinTradingEA from Navigator to chart
+
+2. **Configure Settings**:
+   - Adjust parameters based on your risk tolerance
+   - Enable UseDynamicSLTP for automatic volatility adjustment
+   - Start with conservative settings (0.5% risk)
+
+3. **Enable Auto Trading**:
+   - Click "AutoTrading" button in toolbar (or press Alt+A)
+   - Verify green checkmark appears in top-right corner
+   - Ensure "Allow algorithmic trading" is enabled in Tools → Options → Expert Advisors
+
+4. **Monitor Performance**:
+   - Check "Experts" tab for EA activity and signals
+   - Review open positions in "Trade" tab
+   - Monitor closed trades in "History" tab
+
+### Strategy Testing
+
+To backtest the EA on Bitcoin:
+1. Press Ctrl+R to open Strategy Tester
+2. Select "BitcoinTradingEA" from Expert Advisor list
+3. Choose BTCUSD symbol
+4. Select H1 or H4 timeframe
+5. Set date range (minimum 6 months for statistical significance)
+6. Select "Every tick" model for accuracy
+7. Configure input parameters
+8. Click "Start" to run backtest
+
+### Documentation
+
+See [BITCOIN_TRADING_EA.md](BITCOIN_TRADING_EA.md) for comprehensive documentation including:
+- Detailed parameter explanations
+- Trading strategy breakdown
+- Advanced configuration options
+- Troubleshooting guide
+- Performance optimization tips
+- Bitcoin-specific considerations
+
+### Risk Warnings for Bitcoin Trading
+
+⚠️ **CRITICAL DISCLAIMERS**:
+- **High Volatility**: Bitcoin can move 5-10% or more in a single day
+- **24/7 Market**: Prices change constantly, even on weekends
+- **High Risk**: You can lose 100% of your trading capital
+- **Demo Testing Required**: ALWAYS test extensively on demo accounts first
+- **Start Small**: Begin with 0.5% risk and minimum position sizes
+- **Not Financial Advice**: This EA is for educational purposes only
+
+**Bitcoin-Specific Risks**:
+- Extreme volatility during news events
+- Large weekend gaps despite 24/7 trading
+- High spreads during low liquidity periods
+- Slippage during rapid price movements
+- Regulatory news can cause sudden crashes
+
+### Best Practices
+
+✅ **DO**:
+- Test on demo account for at least 30 days
+- Start with 0.5% risk per trade
+- Monitor EA performance daily
+- Use H1 or H4 timeframes
+- Ensure stable internet and VPS hosting
+- Keep MetaTrader 5 running continuously
+
+❌ **DON'T**:
+- Use real money without extensive testing
+- Risk more than 1-2% per trade initially
+- Use maximum leverage
+- Ignore error messages in Experts tab
+- Expect consistent profits immediately
+- Trade with insufficient account balance
 
 ---
 
