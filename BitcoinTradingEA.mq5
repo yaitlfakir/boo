@@ -68,6 +68,24 @@ double rsi[];
 double atr[];
 double adx[];
 datetime lastBarTime = 0;
+double pipValue = 0.0;  // Will be set in OnInit based on symbol digits
+
+//+------------------------------------------------------------------+
+//| Convert pips to points based on symbol digits                      |
+//+------------------------------------------------------------------+
+double PipsToPoints(double pips)
+{
+   return pips * pipValue;
+}
+
+//+------------------------------------------------------------------+
+//| Convert points to pips based on symbol digits                      |
+//+------------------------------------------------------------------+
+double PointsToPips(double points)
+{
+   if(pipValue == 0.0) return 0.0;
+   return points / pipValue;
+}
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                     |
@@ -76,6 +94,15 @@ int OnInit()
 {
    //--- Set magic number
    trade.SetExpertMagicNumber(MagicNumber);
+   
+   //--- Calculate pip value based on symbol digits
+   int digits = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
+   if(digits == 3 || digits == 5)
+      pipValue = _Point * 10;  // 5-digit or 3-digit broker
+   else
+      pipValue = _Point;        // 4-digit or 2-digit broker
+   
+   Print("Symbol digits: ", digits, ", Pip value: ", pipValue);
    
    //--- Initialize indicators
    handleFastEMA = iMA(_Symbol, PERIOD_CURRENT, FastEMA_Period, 0, MODE_EMA, PRICE_CLOSE);
@@ -166,7 +193,7 @@ void OnTick()
 bool CheckSpreadFilter()
 {
    double spread = (SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
-   double spreadPips = spread / _Point;
+   double spreadPips = PointsToPips(spread);
    
    if(spreadPips > MaxSpreadPips)
    {
@@ -183,7 +210,11 @@ bool CheckTimeFilter()
    if(!UseTimeFilter) return true;
    
    MqlDateTime dt;
-   TimeCurrent(dt);
+   if(!TimeCurrent(dt))
+   {
+      Print("Error getting current time: ", GetLastError());
+      return false;
+   }
    
    if(StartHour <= EndHour)
    {
@@ -207,7 +238,7 @@ bool CheckVolatilityFilter()
    if(!UseVolatilityFilter) return true;
    
    double currentATR = atr[0];
-   double atrPips = currentATR / _Point;
+   double atrPips = PointsToPips(currentATR);
    
    if(atrPips < MinATR || atrPips > MaxATR)
    {
@@ -339,8 +370,8 @@ void CalculateSLTP(bool isBuy, double price, double &sl, double &tp)
    else
    {
       //--- Use fixed pip-based SL/TP
-      slDistance = StopLossPips * _Point;
-      tpDistance = TakeProfitPips * _Point;
+      slDistance = PipsToPoints(StopLossPips);
+      tpDistance = PipsToPoints(TakeProfitPips);
    }
    
    //--- Calculate SL and TP levels
@@ -423,8 +454,8 @@ void ManagePositions()
                                SymbolInfoDouble(_Symbol, SYMBOL_BID) : 
                                SymbolInfoDouble(_Symbol, SYMBOL_ASK);
          
-         double trailDistance = TrailingStopPips * _Point;
-         double trailStep = TrailingStepPips * _Point;
+         double trailDistance = PipsToPoints(TrailingStopPips);
+         double trailStep = PipsToPoints(TrailingStepPips);
          
          if(positionType == POSITION_TYPE_BUY)
          {
