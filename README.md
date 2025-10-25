@@ -4,20 +4,222 @@ A collection of Expert Advisors (EAs) for MetaTrader 5, including automated trad
 
 ## Available Expert Advisors
 
-### 1. BitcoinTradingEA - Automated Bitcoin Trading Robot ⭐ NEW
+### 1. EurusdPredictorEA - EURUSD Price Movement Predictor ⭐ NEW
+A specialized signal-generating EA for EURUSD that predicts price movement using multi-indicator analysis and displays clear UP/DOWN signals on the chart. Perfect for traders who want intelligent signal assistance without automated trading.
+
+### 2. BitcoinTradingEA - Automated Bitcoin Trading Robot
 An automated trading EA specifically designed for Bitcoin (BTCUSD) with cryptocurrency-optimized volatility management, dynamic stops, and trend filtering.
 
-### 2. ScalpingEA - Automated Scalping with Risk Management
+### 3. ScalpingEA - Automated Scalping with Risk Management
 An automated trading EA that uses scalping strategies with comprehensive risk management.
 
-### 3. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
+### 4. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
 A signal-generating EA that analyzes multiple timeframes to display buy and sell signals on the chart.
 
-### 4. TrailingManager - Comprehensive Trading & Risk Management
+### 5. TrailingManager - Comprehensive Trading & Risk Management
 An advanced EA that combines automatic position opening with sophisticated trailing stop, break-even, and trailing take-profit management. Features comprehensive risk controls including daily loss limits, position limits, and intelligent trade entry.
 
-### 5. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
+### 6. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
 An automated trading EA that opens SELL positions based on Stochastic Oscillator crossover above 60 level, combined with momentum reversal and Moving Average confirmation.
+
+---
+
+## EurusdPredictorEA
+
+### Overview
+A specialized signal-generating Expert Advisor designed exclusively for EURUSD currency pair. It analyzes price movements using a sophisticated multi-indicator scoring system and displays clear visual signals (UP/DOWN) to predict future price direction. This is a **signal-only EA** - it provides trading signals but does not execute trades automatically.
+
+### Features
+
+#### Intelligent Price Prediction
+- **Multi-Indicator Analysis**: Combines 5 technical analysis methods for comprehensive market view
+- **Weighted Scoring System**: Assigns points to different signal strengths (threshold: 5+ points)
+- **Real-time Signal Generation**: Analyzes every new bar formation
+- **EURUSD Optimized**: Parameters specifically tuned for EURUSD behavior
+
+#### Technical Analysis Components
+1. **EMA Crossover** (12/26 periods): Primary trend identification and reversal signals
+2. **EMA Trend Analysis**: Confirms overall market direction
+3. **RSI Indicator** (14 period): Momentum analysis and overbought/oversold detection
+4. **MACD** (12/26/9): Trend strength and momentum shift confirmation
+5. **Price vs Signal EMA** (9 period): Price position relative to trend
+
+#### Visual Signal Display
+- **UP Signals**: Green arrow (↑) with optional "UP" text when bullish conditions met
+- **DOWN Signals**: Red arrow (↓) with optional "DOWN" text when bearish conditions met
+- **Customizable Appearance**: Adjustable colors, sizes, and text display
+- **Persistent Signals**: Signals remain on chart for historical reference
+
+#### Alert System
+- **Audio Alerts**: Sound notification when signal is detected
+- **Push Notifications**: Send alerts to MetaTrader mobile app
+- **Email Alerts**: Email notifications for important signals
+- **Detailed Logging**: Complete signal information with indicator values in Experts tab
+
+### Installation
+
+1. Open MetaTrader 5
+2. Click `File` → `Open Data Folder`
+3. Navigate to `MQL5/Experts/`
+4. Copy `EurusdPredictorEA.mq5` to this folder
+5. Restart MetaTrader 5 or click `Refresh` in Navigator
+6. The EA appears under "Expert Advisors" in Navigator
+
+### Quick Start Configuration
+
+#### For Day Trading (Recommended)
+- **Timeframe**: H1 (1 hour)
+- **SignalSize**: 3
+- **EnableAudioAlerts**: true
+- **RSI_UpLevel**: 55.0
+- **RSI_DownLevel**: 45.0
+
+#### For Swing Trading
+- **Timeframe**: H4 (4 hours)
+- **SignalSize**: 3
+- **RSI_UpLevel**: 60.0
+- **RSI_DownLevel**: 40.0
+
+#### For Scalping
+- **Timeframe**: M15 (15 minutes)
+- **SignalSize**: 2
+- **RSI_UpLevel**: 52.0
+- **RSI_DownLevel**: 48.0
+
+### Usage
+
+1. **Attach to Chart**:
+   - Open **EURUSD** chart (EA is designed specifically for EURUSD)
+   - Recommended timeframe: **H1** (1 hour) for balanced signals
+   - Drag and drop EurusdPredictorEA from Navigator to chart
+
+2. **Configure Settings**:
+   - Adjust parameters based on your trading style
+   - Default settings work well for most traders
+   - Enable desired alert types
+
+3. **Enable Auto Trading**:
+   - Click "AutoTrading" button in toolbar (or press Alt+A)
+   - Verify green checkmark appears in top-right corner
+   - Note: Even though EA doesn't trade, AutoTrading must be enabled
+
+4. **Interpret Signals**:
+   - **UP Arrow (Green)**: Indicators suggest upward price movement
+   - **DOWN Arrow (Red)**: Indicators suggest downward price movement
+   - Check Experts tab for detailed signal information and scores
+
+### How the Prediction Works
+
+The EA uses a sophisticated scoring system:
+
+**Signal Generation Process:**
+1. Analyzes 5 different technical indicators
+2. Assigns points based on bullish/bearish conditions (max 9 points each direction)
+3. Generates signal only when score ≥ 5 AND higher than opposite direction
+4. Displays visual arrow and optional text on chart
+
+**Scoring Breakdown:**
+- EMA Crossover: 2 points (strong reversal signal)
+- EMA Trend: 1 point (current direction)
+- RSI Analysis: 2 points (momentum confirmation)
+- MACD Analysis: 2 points (trend strength)
+- Price Position: 1 point (relative strength)
+
+**Example Strong Signal:**
+```
+UP Score: 7 points
+- Fast EMA crosses above Slow EMA (+2)
+- Fast EMA above Slow EMA (+1)
+- RSI > 55 and rising (+2)
+- MACD above signal (+1)
+- Price above Signal EMA (+1)
+Result: Strong UP signal displayed
+```
+
+### Documentation
+
+See [EURUSD_PREDICTOR_EA.md](EURUSD_PREDICTOR_EA.md) for comprehensive documentation including:
+- Detailed parameter explanations
+- Configuration profiles (Conservative, Balanced, Aggressive)
+- Signal interpretation guide
+- Trading strategies and best practices
+- Troubleshooting guide
+- FAQ section
+
+See [EURUSD_PREDICTOR_QUICKSTART.md](EURUSD_PREDICTOR_QUICKSTART.md) for:
+- 5-minute setup guide
+- Quick reference for signals
+- Common questions
+- Basic trading tips
+
+### Important Notes
+
+✅ **This EA**:
+- Analyzes EURUSD price movements
+- Displays visual UP/DOWN signals
+- Provides alerts when signals appear
+- Helps you make informed trading decisions
+
+❌ **This EA Does NOT**:
+- Execute trades automatically
+- Guarantee profits or accuracy
+- Work on other currency pairs by default
+- Replace proper market analysis
+- Eliminate trading risk
+
+### Best Practices
+
+**Signal Interpretation:**
+- Wait 1-2 bars after signal for confirmation
+- Check higher timeframe for trend alignment
+- Use signals in combination with support/resistance levels
+- Always use proper risk management (stop loss, position sizing)
+
+**Recommended Approach:**
+1. Watch signals for 1 week without trading (observation)
+2. Test on demo account for 2-4 weeks
+3. Start live trading with minimum lot sizes
+4. Gradually increase position size as you gain confidence
+
+### Risk Warnings
+
+⚠️ **CRITICAL DISCLAIMERS**:
+- **Not 100% Accurate**: Technical analysis cannot predict the future with certainty
+- **Demo Testing Required**: ALWAYS test extensively on demo accounts first
+- **Proper Risk Management**: Use stop losses and never risk more than 1-2% per trade
+- **Market Unpredictability**: News events and market conditions can override technical signals
+- **Not Financial Advice**: This EA is for educational purposes only
+- **No Guarantees**: Past signal performance does not guarantee future results
+
+### Strategy Testing
+
+To evaluate signal quality:
+1. Press Ctrl+R to open Strategy Tester
+2. Select "EurusdPredictorEA" from Expert Advisor list
+3. Choose EURUSD symbol
+4. Select timeframe (H1 or H4 recommended)
+5. Set date range (minimum 3 months)
+6. Click "Start" to run backtest
+7. Review signal history in Experts log (signals don't show visually in tester)
+
+### Troubleshooting
+
+**EA not working:**
+- Verify chart symbol is EURUSD
+- Check that AutoTrading is enabled
+- Ensure "Allow algorithmic trading" in Tools → Options → Expert Advisors
+- Check Experts tab for error messages
+
+**No signals appearing:**
+- Be patient - signals require strong conditions (score ≥ 5)
+- Try different timeframes (H1 or H4)
+- Market may be in consolidation (no clear direction)
+- Check indicator parameters
+
+**Wrong symbol error:**
+- EA is designed for EURUSD only
+- Attach only to EURUSD charts
+- Set `CheckSymbol = false` to disable restriction (not recommended)
 
 ---
 
