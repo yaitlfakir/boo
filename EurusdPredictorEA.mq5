@@ -4,9 +4,10 @@
 //|                       EURUSD Price Movement Prediction & Signals  |
 //+------------------------------------------------------------------+
 #property copyright "EurusdPredictorEA"
-#property version   "1.00"
+#property version   "2.00"
 #property description "EURUSD price movement predictor with visual signals"
 #property description "Displays UP/DOWN signals based on technical analysis"
+#property description "Enhanced with volatility filter, trend strength, and multi-timeframe analysis"
 
 //--- Input Parameters
 input group "=== Signal Display Settings ==="
