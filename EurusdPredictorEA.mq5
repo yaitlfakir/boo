@@ -34,6 +34,12 @@ input bool     EnableEmailAlerts = false;        // Enable Email Alerts
 input group "=== Advanced Settings ==="
 input int      MinBarsRequired = 50;             // Minimum Bars for Analysis
 input bool     CheckSymbol = true;               // Restrict to EURUSD Only
+input int      TextOffsetPoints = 50;            // Text Offset from Arrow (points)
+
+//--- Constants
+#define TARGET_SYMBOL "EURUSD"                    // Target symbol for EA
+#define SIGNAL_PREFIX "EurusdSignal_"             // Prefix for signal arrows
+#define TEXT_PREFIX "EurusdText_"                 // Prefix for signal text
 
 //--- Global Variables
 int handle_FastEMA;
@@ -51,10 +57,10 @@ datetime lastSignalTime = 0;
 int OnInit()
 {
    //--- Check if symbol is EURUSD
-   if(CheckSymbol && _Symbol != "EURUSD")
+   if(CheckSymbol && _Symbol != TARGET_SYMBOL)
    {
-      Print("ERROR: This EA is designed for EURUSD only. Current symbol: ", _Symbol);
-      Alert("EurusdPredictorEA: This EA works only on EURUSD chart!");
+      Print("ERROR: This EA is designed for ", TARGET_SYMBOL, " only. Current symbol: ", _Symbol);
+      Alert("EurusdPredictorEA: This EA works only on ", TARGET_SYMBOL, " chart!");
       return(INIT_FAILED);
    }
    
@@ -106,8 +112,8 @@ void OnDeinit(const int reason)
    if(handle_MACD != INVALID_HANDLE) IndicatorRelease(handle_MACD);
    
    //--- Clean up chart objects
-   ObjectsDeleteAll(0, "EurusdSignal_");
-   ObjectsDeleteAll(0, "EurusdText_");
+   ObjectsDeleteAll(0, SIGNAL_PREFIX);
+   ObjectsDeleteAll(0, TEXT_PREFIX);
    
    Print("EurusdPredictorEA deinitialized. Reason: ", reason);
 }
@@ -220,8 +226,8 @@ void OnTick()
    //--- Display signal if detected
    if(signalType != "")
    {
-      string signalName = "EurusdSignal_" + TimeToString(currentBarTime);
-      string textName = "EurusdText_" + TimeToString(currentBarTime);
+      string signalName = SIGNAL_PREFIX + TimeToString(currentBarTime);
+      string textName = TEXT_PREFIX + TimeToString(currentBarTime);
       
       //--- Draw arrow
       if(signalType == "UP")
@@ -305,7 +311,7 @@ void DrawSignalText(string name, datetime time, double price, string text, color
       ObjectDelete(0, name);
    
    //--- Adjust price for text placement
-   double offset = _Point * 50;  // Offset text from arrow
+   double offset = _Point * TextOffsetPoints;  // Offset text from arrow
    if(text == "UP")
       price -= offset;
    else
