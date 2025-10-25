@@ -9,10 +9,10 @@ Version 2.0 of EurusdPredictorEA represents a significant upgrade focused on **s
 ### 1. Enhanced Indicator Analysis (5 → 8 Indicators)
 
 **NEW Indicators Added:**
-- **ATR (Average True Range)**: Measures market volatility for filtering
-- **ADX (Average Directional Index)**: Measures trend strength
-- **+DI/-DI (Directional Indicators)**: Determines trend direction
-- **Higher Timeframe EMAs**: Multi-timeframe trend confirmation
+- **ATR (Average True Range)**: Measures market volatility for filtering. Higher ATR = more volatility, lower ATR = less movement. We use ATR to skip signals when volatility is too low (< 50% of recent average), as low volatility often produces unreliable signals.
+- **ADX (Average Directional Index)**: Measures trend strength on a scale of 0-100. ADX < 20 = weak/ranging market, ADX 20-25 = emerging trend, ADX > 25 = strong trend. We filter out signals when ADX < 20 to avoid ranging markets.
+- **+DI/-DI (Directional Indicators)**: Determines trend direction. +DI > -DI = bullish pressure, -DI > +DI = bearish pressure. Used for confirming signal direction.
+- **Higher Timeframe EMAs**: Multi-timeframe trend confirmation. If trading H1, we check H4 trend alignment. This reduces counter-trend signals and improves accuracy.
 
 **Result**: More comprehensive market analysis with 8 indicators vs 5 in v1.0
 
@@ -83,17 +83,23 @@ Signals are now categorized by strength:
 
 ## Expected Results
 
-### Signal Frequency
-- **30-50% fewer signals** compared to v1.0
-- M15: 3-6 signals/day (was 5-10)
-- H1: 1-2 signals/day (was 1-3)
-- H4: 1-2 signals/week (unchanged)
+⚠️ **Disclaimer**: The following are theoretical expectations based on the improvements made. Actual results may vary depending on market conditions, timeframe, and trading approach. Past performance does not guarantee future results. Always test thoroughly on a demo account before live trading.
 
-### Signal Accuracy
-- **Significantly improved win rate** on trending markets
-- STRONG signals expected to have 60-70%+ success rate
-- MEDIUM signals expected to have 50-60% success rate
-- WEAK signals expected to have 45-55% success rate
+### Signal Frequency (Estimated)
+- **30-50% fewer signals** compared to v1.0 (theoretical estimate based on filter implementation)
+- M15: 3-6 signals/day (was 5-10) *estimate*
+- H1: 1-2 signals/day (was 1-3) *estimate*
+- H4: 1-2 signals/week (unchanged) *estimate*
+
+### Signal Accuracy (Theoretical Expectations)
+⚠️ **Important**: These are theoretical expectations, not verified backtesting results. Accuracy will vary based on market conditions, timeframe, and individual trading decisions.
+
+- **Improved win rate** expected on trending markets due to filters
+- STRONG signals *expected* to have higher success rate (theoretical 60-70%+ range)
+- MEDIUM signals *expected* to have moderate success rate (theoretical 50-60% range)
+- WEAK signals *expected* to have lower success rate (theoretical 45-55% range)
+
+**Note**: Actual performance will depend on proper risk management, entry timing, stop loss placement, and market conditions. These figures represent expected performance improvements relative to v1.0, not guaranteed outcomes.
 
 ### Trading Impact
 - Better risk-reward ratio due to fewer false signals
