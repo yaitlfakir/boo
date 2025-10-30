@@ -4,23 +4,246 @@ A collection of Expert Advisors (EAs) for MetaTrader 5, including automated trad
 
 ## Available Expert Advisors
 
-### 1. EurusdPredictorEA - EURUSD Price Movement Predictor ⭐ NEW
+### 1. TradingManager - Complete Trading Dashboard & Control Center ⭐ NEW
+A comprehensive trading dashboard with one-click controls, real-time indicators, stochastic alerts, and advanced position management. Features visual trend display, support/resistance detection, buttons to open multiple trades, close profitable positions, and set break-even - all from an intuitive dashboard interface.
+
+### 2. EurusdPredictorEA - EURUSD Price Movement Predictor
 A specialized signal-generating EA for EURUSD that predicts price movement using multi-indicator analysis and displays clear UP/DOWN signals on the chart. Perfect for traders who want intelligent signal assistance without automated trading.
 
-### 2. BitcoinTradingEA - Automated Bitcoin Trading Robot
+### 3. BitcoinTradingEA - Automated Bitcoin Trading Robot
 An automated trading EA specifically designed for Bitcoin (BTCUSD) with cryptocurrency-optimized volatility management, dynamic stops, and trend filtering.
 
-### 3. ScalpingEA - Automated Scalping with Risk Management
+### 4. ScalpingEA - Automated Scalping with Risk Management
 An automated trading EA that uses scalping strategies with comprehensive risk management.
 
-### 4. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
+### 5. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
 A signal-generating EA that analyzes multiple timeframes to display buy and sell signals on the chart.
 
-### 5. TrailingManager - Comprehensive Trading & Risk Management
+### 6. TrailingManager - Comprehensive Trading & Risk Management
 An advanced EA that combines automatic position opening with sophisticated trailing stop, break-even, and trailing take-profit management. Features comprehensive risk controls including daily loss limits, position limits, and intelligent trade entry.
 
-### 6. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
+### 7. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
 An automated trading EA that opens SELL positions based on Stochastic Oscillator crossover above 60 level, combined with momentum reversal and Moving Average confirmation.
+
+---
+
+## TradingManager
+
+### Overview
+The **EA Trading Manager** is a comprehensive trading dashboard and control center that puts complete trading control at your fingertips. Unlike automated EAs that trade for you, this tool gives you instant access to market indicators, one-click trading controls, and advanced position management features - all from a clean, visual dashboard.
+
+### Key Features
+
+#### Visual Dashboard with Real-Time Indicators
+- **Trend Display**: Shows current market trend (BULLISH ↑ / BEARISH ↓ / NEUTRAL) based on EMA crossover
+- **Stochastic Oscillator**: Live values with overbought/oversold status highlighting
+- **RSI Indicator**: Momentum analysis with condition indicators
+- **ADX (Trend Strength)**: Shows whether trend is STRONG or WEAK for trade confidence
+- **ATR (Volatility)**: Current market volatility measurement for stop loss adjustment
+- **Position Information**: Live count of open positions and total profit/loss with color coding
+
+#### One-Click Trading Controls
+- **Single Trade Buttons**: BUY and SELL buttons for instant position opening
+- **Multiple Trade Buttons**: Open 3 BUYs or 3 SELLs simultaneously (configurable count)
+- **Close All Profitable**: Automatically closes only winning positions, leaving losers to recover
+- **Set Break-Even**: Moves stop loss to break-even for losing trades that have become profitable
+- **Close All Positions**: Emergency close all button for rapid exit
+
+#### Stochastic Alert System
+- **Overbought Alerts**: Notification when Stochastic crosses above resistance level (default: 80)
+- **Oversold Alerts**: Notification when Stochastic crosses below support level (default: 20)
+- **Multiple Alert Types**: Audio alerts, push notifications to mobile, and email alerts
+- **Smart Logic**: Only alerts once per crossover, resets when back in neutral zone
+
+#### Support & Resistance Detection
+- **Automatic S/R Calculation**: Analyzes last 100 bars for swing highs (resistance) and lows (support)
+- **Visual Display**: Draws green support lines and red resistance lines on chart
+- **Proximity Alerts**: Dashboard shows when price is near significant S/R levels
+- **Configurable Tolerance**: Adjust sensitivity of level detection
+
+### Installation
+
+1. Open MetaTrader 5
+2. Click `File` → `Open Data Folder`
+3. Navigate to `MQL5/Experts/`
+4. Copy `TradingManager.mq5` to this folder
+5. Restart MetaTrader 5 or click `Refresh` in Navigator
+6. The EA appears under "Expert Advisors" in Navigator
+
+### Quick Start Configuration
+
+#### For Conservative Trading (Recommended for Beginners)
+- **DefaultLotSize**: 0.01 (minimum)
+- **StopLossPips**: 40 (wider stop)
+- **TakeProfitPips**: 80 (2:1 risk/reward)
+- **MultiTradeCount**: 1 (single trades only)
+- **Timeframe**: H1 or H4
+
+#### For Balanced Trading
+- **DefaultLotSize**: 0.1 (standard)
+- **StopLossPips**: 30 (moderate)
+- **TakeProfitPips**: 60 (2:1 risk/reward)
+- **MultiTradeCount**: 3 (can open multiple)
+- **Timeframe**: H1
+
+#### For Active Trading
+- **DefaultLotSize**: 0.1 (adjust based on account)
+- **StopLossPips**: 20 (tighter stops)
+- **TakeProfitPips**: 40 (quicker targets)
+- **MultiTradeCount**: 3
+- **Timeframe**: M15 or M30
+
+### Usage
+
+1. **Attach to Chart**:
+   - Open any currency pair chart (EURUSD, GBPUSD, USDJPY, etc.)
+   - Recommended timeframe: **H1** (1 hour) for balanced trading
+   - Drag and drop TradingManager from Navigator to chart
+
+2. **Configure Settings**:
+   - Adjust parameters based on your trading style and risk tolerance
+   - Enable desired alert types (audio, push, email)
+   - Configure lot sizes and stop loss/take profit levels
+
+3. **Enable Auto Trading**:
+   - Click "AutoTrading" button in toolbar (or press Alt+A)
+   - Verify green checkmark appears in top-right corner
+   - Dashboard appears on the chart
+
+4. **Start Trading**:
+   - Monitor indicators on dashboard
+   - Wait for clear signals (trend + stochastic + RSI alignment)
+   - Click BUY or SELL to open positions
+   - Use position management buttons as needed
+
+### How to Trade with the Dashboard
+
+**Opening Trades:**
+- **Single Position**: Click BUY or SELL for one trade
+- **Multiple Positions**: Click "OPEN 3 BUYS" or "OPEN 3 SELLS" for scaling into position
+- All trades open with configured lot size, stop loss, and take profit
+
+**Managing Positions:**
+- **Close Winners**: Click "CLOSE ALL PROFITABLE" to lock in gains
+- **Protect Capital**: Click "SET BREAK-EVEN" to move SL to entry for losing positions
+- **Emergency Exit**: Click "CLOSE ALL POSITIONS" to close everything immediately
+
+**Understanding Indicators:**
+- **BULLISH Trend + Stochastic Oversold**: Look for BUY opportunities
+- **BEARISH Trend + Stochastic Overbought**: Look for SELL opportunities
+- **ADX < 20 (WEAK)**: Avoid trading, market is choppy
+- **ADX > 25 (STRONG)**: Good trending conditions for trading
+- **Near Support/Resistance**: Watch for bounces or breakouts
+
+### Trading Strategy Examples
+
+**Strategy 1: Trend Following**
+1. Wait for trend to show BULLISH or BEARISH (not NEUTRAL)
+2. Confirm with ADX > 25 (STRONG trend)
+3. Wait for Stochastic pullback (oversold for buys, overbought for sells)
+4. Click BUY or SELL when indicators align
+5. Use SET BREAK-EVEN after 20 pips profit
+6. Close with CLOSE ALL PROFITABLE when indicators reverse
+
+**Strategy 2: Support/Resistance Bounce**
+1. Watch for "Near SUPPORT" or "Near RESISTANCE" on dashboard
+2. Wait for confirmation (Stochastic oversold at support or overbought at resistance)
+3. Enter trade with BUY at support or SELL at resistance
+4. Set tight stops just beyond S/R level
+5. Take profit at next S/R level
+
+**Strategy 3: Multiple Entry Scaling**
+1. Identify strong trend (ADX > 25, clear direction)
+2. Wait for pullback to support (uptrend) or resistance (downtrend)
+3. Use "OPEN 3 BUYS" or "OPEN 3 SELLS" for multiple entries
+4. Use SET BREAK-EVEN once profitable
+5. Exit all with CLOSE ALL PROFITABLE at target
+
+### Documentation
+
+See [TRADING_MANAGER.md](TRADING_MANAGER.md) for comprehensive documentation including:
+- Detailed parameter explanations
+- Complete feature descriptions
+- Advanced trading strategies
+- Risk management guidelines
+- Troubleshooting guide
+- Best practices and tips
+
+See [TRADING_MANAGER_QUICKSTART.md](TRADING_MANAGER_QUICKSTART.md) for:
+- 5-minute setup guide
+- Dashboard overview
+- Simple trading strategy
+- Common issues and solutions
+- Quick reference for all features
+
+### Important Notes
+
+✅ **This EA Provides**:
+- Real-time visual dashboard with 6 key indicators
+- One-click trading controls for manual execution
+- Stochastic alerts when reaching overbought/oversold levels
+- Automatic support/resistance level detection and display
+- Advanced position management (close profitable, break-even, close all)
+- Complete control over your trading decisions
+
+❌ **This EA Does NOT**:
+- Execute trades automatically (you control all entries)
+- Guarantee profits or accuracy
+- Replace proper market analysis and trading knowledge
+- Eliminate trading risk
+
+### Best Practices
+
+**Signal Interpretation:**
+- Use all indicators together, not individually
+- Wait for strong confluence (trend + stochastic + RSI)
+- Check ADX to ensure trending conditions
+- Respect support and resistance levels
+- Always use proper risk management
+
+**Position Management:**
+- Start with single trades, not multiple
+- Use break-even feature once trade is 20+ pips profitable
+- Close profitable trades before end of trading session
+- Don't let small profits turn into losses
+- Use emergency close button if market turns against you
+
+**Risk Management:**
+- Always use stop losses (configured in settings)
+- Never risk more than 2% per trade
+- Multiple trades = multiple risk (use smaller lots)
+- Test on demo account first (30+ days recommended)
+- Start with minimum lot sizes on live account
+
+### Risk Warnings
+
+⚠️ **CRITICAL DISCLAIMERS**:
+- **High Risk**: Trading carries substantial risk of loss
+- **No Guarantee**: This tool does not guarantee profits
+- **Demo Testing Required**: ALWAYS test extensively on demo accounts first
+- **Your Responsibility**: You make all trading decisions, you accept all risks
+- **Not Financial Advice**: This EA is for educational purposes only
+- **Proper Risk Management**: Use stop losses and never risk more than you can afford to lose
+
+### Troubleshooting
+
+**Dashboard not showing:**
+- Verify AutoTrading is enabled (green checkmark)
+- Check that EA is active on chart
+- Adjust dashboard X/Y position if off-screen
+- Check Experts tab for error messages
+
+**Buttons not working:**
+- Ensure AutoTrading is enabled
+- Verify "Allow algorithmic trading" in Tools → Options
+- Check account has sufficient margin
+- Look for error messages in Experts tab
+
+**No stochastic alerts:**
+- Set EnableStochAlerts = true in settings
+- Enable at least one alert type (audio/push/email)
+- Wait for stochastic to actually cross levels
+- Check volume is up (for audio alerts)
 
 ---
 
