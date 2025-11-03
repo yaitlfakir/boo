@@ -7,6 +7,7 @@
 - **BUY** when Stochastic %K crosses above %D
 - **SELL** when Stochastic %K crosses below %D
 - Uses ATR-based dynamic stops that adapt to Bitcoin's volatility
+- **Smart Risk Management**: Break-even, trailing stop, trailing profit, daily loss limits, drawdown protection
 
 ### Installation (2 minutes)
 
@@ -87,7 +88,12 @@ The EA automatically:
 - Calculates lot size based on your risk %
 - Sets stop loss using ATR (adapts to volatility)
 - Sets take profit at 2x the stop loss distance
-- Trails the stop to lock in profits
+- **Moves SL to break-even** when profit reaches 200 pips
+- **Trails the stop** to lock in profits as price moves
+- **Trails the take profit** closer as price approaches target
+- **Stops trading** if daily loss exceeds 5%
+- **Halts trading** if drawdown from peak exceeds 15%
+- **Pauses trading** after 3 consecutive losses
 
 ## Key Parameters Explained
 
@@ -99,8 +105,12 @@ The EA automatically:
 | **UseDynamicSLTP** | Use ATR-based stops (recommended) | true |
 | **ATR_Multiplier** | How wide the stops are | 2.0 - 2.5 |
 | **MaxOpenPositions** | Maximum trades at once | 1 |
-| **StopLossPips** | Fixed SL if not using dynamic | 500 |
-| **TakeProfitPips** | Fixed TP if not using dynamic | 1000 |
+| **UseBreakEven** | Auto move SL to break-even | true |
+| **BreakEvenPips** | Profit needed to trigger break-even | 200 |
+| **UseTrailingProfit** | Move TP closer as price approaches | true |
+| **MaxDailyLossPercent** | Daily loss limit (% of balance) | 3% - 5% |
+| **MaxDrawdownPercent** | Maximum drawdown limit | 10% - 15% |
+| **MaxConsecutiveLosses** | Stop after X losing trades | 2 - 3 |
 
 ### When to Adjust
 

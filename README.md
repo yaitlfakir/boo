@@ -958,6 +958,281 @@ See [STOCHASTIC_SELL_EA.md](STOCHASTIC_SELL_EA.md) for comprehensive documentati
 
 ---
 
+## BTCStochasticEA
+
+### Overview
+A fully automated Bitcoin trading EA that uses the Stochastic Oscillator (19,7,3) for signal generation. This EA features advanced risk management with trailing profit, break-even functionality, and multi-layer capital protection systems designed specifically for Bitcoin's high volatility.
+
+### Trading Strategy
+
+**Simple and Effective:**
+- **BUY Signal**: Opens long position when Stochastic %K crosses above %D
+- **SELL Signal**: Opens short position when Stochastic %K crosses below %D
+- Pure crossover strategy with no complex filters for clear, actionable signals
+
+### Key Features
+
+#### Advanced Position Management
+- **Break-Even Feature**: Automatically moves stop loss to entry + small profit when position reaches 200 pips profit
+- **Trailing Stop**: Dynamic stop loss that follows price to lock in profits (300 pips distance)
+- **Trailing Profit**: Intelligently moves take profit closer as price approaches target (400 pips distance)
+- **ATR-Based Dynamic SL/TP**: Adapts stop loss and take profit to current market volatility
+
+#### Smart Risk Management System
+- **Daily Loss Limit**: Stops trading if daily loss exceeds 5% (configurable)
+- **Maximum Drawdown Protection**: Halts trading when drawdown from peak exceeds 15%
+- **Consecutive Loss Limit**: Pauses trading after 3 consecutive losing trades
+- **Automatic Position Closure**: Closes all positions when risk limits are breached
+- **Daily Reset**: Risk counters automatically reset at start of each trading day
+
+#### Bitcoin-Optimized Features
+- **Volatility Adapted**: Uses 2x ATR multiplier for dynamic stops
+- **Large Stop Distances**: Default 500 pips for Bitcoin's large price movements
+- **High Spread Tolerance**: 50 pips max spread (suitable for crypto markets)
+- **24/7 Trading Ready**: Optional time filter (disabled by default)
+- **Position Sizing**: Automatic lot calculation based on account balance and risk %
+
+### Installation
+
+1. Open MetaTrader 5
+2. Click `File` → `Open Data Folder`
+3. Navigate to `MQL5/Experts/`
+4. Copy `BTCStochasticEA.mq5` to this folder
+5. Restart MetaTrader 5 or click `Refresh` in Navigator
+6. The EA appears under "Expert Advisors" in Navigator
+
+### Quick Start Configuration
+
+#### Conservative (Recommended for Beginners)
+- **RiskPercent**: 0.5%
+- **UseDynamicSLTP**: true
+- **ATR_Multiplier**: 2.5
+- **MaxOpenPositions**: 1
+- **UseBreakEven**: true
+- **MaxDailyLossPercent**: 3%
+- **MaxDrawdownPercent**: 10%
+- **Timeframe**: H1 or H4
+
+#### Moderate (Balanced Risk)
+- **RiskPercent**: 1.0%
+- **UseDynamicSLTP**: true
+- **ATR_Multiplier**: 2.0
+- **MaxOpenPositions**: 1
+- **UseBreakEven**: true
+- **MaxDailyLossPercent**: 5%
+- **MaxDrawdownPercent**: 15%
+- **Timeframe**: H1
+
+#### Aggressive (High Risk - Experienced Traders Only)
+- **RiskPercent**: 2.0%
+- **UseDynamicSLTP**: true
+- **ATR_Multiplier**: 1.5
+- **MaxOpenPositions**: 2
+- **UseBreakEven**: true
+- **MaxDailyLossPercent**: 7%
+- **MaxDrawdownPercent**: 20%
+- **Timeframe**: M30 or H1
+
+### Usage
+
+1. **Attach to Chart**:
+   - Open a **BTCUSD** chart (ensure your broker offers Bitcoin)
+   - Recommended timeframe: **H1** (1 hour) for balanced trading
+   - Drag and drop BTCStochasticEA from Navigator to chart
+
+2. **Configure Settings**:
+   - Adjust parameters based on your risk tolerance
+   - Start with Conservative settings for beginners
+   - Enable all risk management features (recommended)
+
+3. **Enable Auto Trading**:
+   - Click "AutoTrading" button in toolbar (or press Alt+A)
+   - Verify green checkmark appears in top-right corner
+   - Ensure "Allow algorithmic trading" is enabled in Tools → Options
+
+4. **Monitor Performance**:
+   - Check "Experts" tab for EA activity and signals
+   - Review open positions in "Trade" tab
+   - Monitor closed trades in "History" tab
+   - Watch for risk management notifications
+
+### How the Risk Management Works
+
+#### Break-Even Protection
+When a position reaches 200 pips profit (configurable):
+- Stop loss automatically moves to entry price + 10 pips
+- Guarantees minimum profit even if market reverses
+- Eliminates risk of turning winning trade into losing trade
+
+#### Trailing Stop & Trailing Profit
+As position becomes profitable:
+- **Trailing Stop**: Follows price 300 pips below (BUY) or above (SELL)
+- **Trailing Profit**: Moves TP closer as price approaches target
+- Works together to lock in maximum profit while preventing premature exits
+
+#### Daily Loss Limit (Default: 5%)
+- Tracks daily performance from midnight server time
+- If daily loss reaches 5% of start balance:
+  - Closes all open positions immediately
+  - Stops opening new trades for remainder of day
+  - Automatically resets at start of next trading day
+- Prevents emotional trading after bad days
+
+#### Maximum Drawdown Protection (Default: 15%)
+- Monitors peak account balance and current equity
+- If drawdown from peak exceeds 15%:
+  - Closes all positions immediately
+  - Halts all trading until manually reset
+- Protects against catastrophic losses during unfavorable conditions
+
+#### Consecutive Loss Limit (Default: 3)
+- Counts consecutive losing trades
+- Resets to zero after any winning trade
+- If 3 consecutive losses occur:
+  - Closes all positions
+  - Stops trading until reset or settings adjusted
+- Prevents revenge trading and recognizes when strategy isn't working
+
+### Strategy Testing
+
+To backtest the EA on Bitcoin:
+1. Press Ctrl+R to open Strategy Tester
+2. Select "BTCStochasticEA" from Expert Advisor list
+3. Choose BTCUSD symbol
+4. Select H1 or H4 timeframe
+5. Set date range (minimum 6 months, preferably 1+ years)
+6. Select "Every tick" model for highest accuracy
+7. Configure input parameters
+8. Click "Start" to run backtest
+
+**Evaluate Results:**
+- Win rate: 40-60% typical
+- Profit factor: > 1.5 desirable
+- Max drawdown: < 30% acceptable
+- Check impact of risk management features
+
+### Documentation
+
+See [BTC_STOCHASTIC_EA.md](BTC_STOCHASTIC_EA.md) for comprehensive documentation including:
+- Detailed parameter explanations
+- Complete risk management system breakdown
+- Configuration profiles (Conservative, Balanced, Aggressive)
+- Trading strategy examples
+- Performance optimization tips
+- Troubleshooting guide
+- FAQ section
+
+See [BTC_STOCHASTIC_QUICKSTART.md](BTC_STOCHASTIC_QUICKSTART.md) for:
+- 5-minute setup guide
+- Quick reference for signals
+- Key parameter explanations
+- Common issues and solutions
+- Risk management summary
+
+### Important Notes
+
+✅ **This EA Provides**:
+- Fully automated Bitcoin trading based on Stochastic crossovers
+- Advanced risk management with multiple protection layers
+- Break-even, trailing stop, and trailing profit features
+- Daily loss limits and drawdown protection
+- Consecutive loss monitoring
+- ATR-based dynamic stops adapted to volatility
+
+❌ **This EA Does NOT**:
+- Guarantee profits or eliminate losses
+- Work effectively in all market conditions
+- Replace proper market analysis and understanding
+- Eliminate the need for monitoring and management
+
+### Best Practices
+
+**Trading Setup:**
+- Start with demo account (30+ days minimum)
+- Begin with Conservative settings (0.5% risk)
+- Use H1 or H4 timeframe initially
+- Keep MaxOpenPositions at 1
+- Enable all risk management features
+
+**Risk Management:**
+- Never disable stop losses
+- Don't increase risk after losses
+- Respect the daily loss limit
+- Don't override break-even or trailing stops
+- Let the EA manage positions automatically
+
+**Monitoring:**
+- Check performance daily
+- Review Experts tab for notifications
+- Watch for risk limit activations
+- Adjust settings based on results (demo first)
+- Use VPS for 24/7 operation
+
+**When Trading is Halted:**
+- Review what triggered the halt
+- Analyze market conditions
+- Don't immediately restart with higher limits
+- Test any adjustments on demo first
+- Wait for favorable conditions before resuming
+
+### Risk Warnings
+
+⚠️ **CRITICAL DISCLAIMERS**:
+
+**High Risk Trading:**
+- Bitcoin trading is extremely risky and volatile
+- You can lose 100% of your trading capital
+- Past performance does not guarantee future results
+- This EA is not a "holy grail" - losses will occur
+
+**Market Risks:**
+- Extreme volatility during news events
+- Large price gaps despite 24/7 trading
+- High spreads during low liquidity
+- Slippage during rapid price movements
+- Regulatory news can cause sudden crashes
+
+**Required Actions:**
+1. **Test Extensively**: MANDATORY 30+ days demo testing
+2. **Start Conservative**: Begin with 0.5% risk and minimum lots
+3. **Use Risk Management**: Enable all protection features
+4. **Monitor Regularly**: Check EA performance daily
+5. **Accept Responsibility**: All trading decisions and risks are yours
+
+**No Guarantees:**
+- This EA does not guarantee profits
+- Risk management limits losses but doesn't eliminate them
+- Strategy may not work in all market conditions
+- Continuous monitoring and adjustment may be needed
+
+### Troubleshooting
+
+**EA Not Trading:**
+- Check AutoTrading is enabled
+- Verify not halted by risk limits (check Experts tab)
+- Confirm spread is acceptable (< MaxSpreadPips)
+- Wait for Stochastic crossover signal
+
+**Trading Halted:**
+- Check Experts tab for reason (daily loss, drawdown, consecutive losses)
+- Review account performance
+- Adjust risk parameters if needed (test on demo first)
+- Wait for new trading day if daily loss limit hit
+
+**Break-Even Not Working:**
+- Verify UseBreakEven is enabled
+- Check position has reached BreakEvenPips profit
+- Look for modification messages in Experts tab
+- Ensure broker allows SL modifications
+
+**Trailing Not Working:**
+- Verify UseTrailingStop/UseTrailingProfit enabled
+- Check position is profitable enough to activate trailing
+- Look for trailing messages in Experts tab
+- Ensure broker respects stop level requirements
+
+---
+
 ## Support & Contributions
 
 This is an open-source project. Feel free to:

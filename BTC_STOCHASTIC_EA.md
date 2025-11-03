@@ -21,13 +21,23 @@ This EA is optimized for Bitcoin's high volatility with dynamic stop losses base
 - **Position Sizing**: Automatic lot size calculation based on account balance and risk percentage
 - **Spread Filter**: Avoids trading during high spread conditions (protects from poor entries)
 - **Trailing Stop**: Locks in profits as Bitcoin price moves favorably
+- **Trailing Profit**: Moves take profit closer as price approaches target (maximizes gains)
+- **Break-Even Feature**: Automatically moves stop loss to break-even when profit threshold is reached
 - **Maximum Position Limit**: Controls exposure with configurable position count
+
+### Smart Risk Management System
+- **Daily Loss Limit**: Automatically stops trading if daily loss exceeds threshold (default: 5%)
+- **Maximum Drawdown Protection**: Halts trading when drawdown from peak balance exceeds limit (default: 15%)
+- **Consecutive Loss Limit**: Stops trading after X consecutive losing trades (default: 3)
+- **Automatic Position Closure**: Closes all positions when risk limits are breached
+- **Daily Reset**: Risk counters reset at start of each new trading day
 
 ### Key Advantages for Bitcoin
 - **Volatility Adapted**: Uses ATR multiplier for dynamic stops (default: 2x ATR)
 - **Large Stop Distances**: Default 500 pips for Bitcoin's large price movements
 - **24/7 Trading Ready**: Optional time filter (disabled by default for crypto markets)
 - **High Spread Tolerance**: 50 pips max spread (suitable for crypto markets)
+- **Multi-Layer Protection**: Combines multiple risk management techniques for capital preservation
 
 ## Installation
 
@@ -102,11 +112,47 @@ Timeframe: M30 or H1
 - **MaxSpreadPips** (default: 50.0): Maximum allowed spread in pips
   - Prevents trading during low liquidity periods
   
+#### Trailing Stop Management
 - **UseTrailingStop** (default: true): Enable trailing stop to lock in profits
   
 - **TrailingStopPips** (default: 300.0): Distance of trailing stop from current price
   
 - **TrailingStepPips** (default: 100.0): Minimum price movement to adjust trailing stop
+
+- **UseBreakEven** (default: true): Automatically move SL to break-even
+  
+- **BreakEvenPips** (default: 200.0): Profit in pips required to trigger break-even
+  
+- **BreakEvenPlusPips** (default: 10.0): Additional pips beyond entry for break-even SL
+  - Ensures small profit even if price reverses after break-even
+
+#### Trailing Profit Management
+- **UseTrailingProfit** (default: true): Enable trailing take profit
+  - Moves TP closer as price approaches it
+  - Helps lock in profits before potential reversals
+  
+- **TrailingProfitPips** (default: 400.0): Distance of trailing TP from current price
+  
+- **TrailingProfitStepPips** (default: 150.0): Minimum price movement to adjust trailing TP
+
+#### Smart Risk Management
+- **UseDailyLossLimit** (default: true): Enable daily loss limit protection
+  
+- **MaxDailyLossPercent** (default: 5.0%): Maximum daily loss as % of daily start balance
+  - Trading stops for the day if this limit is reached
+  - Resets at start of each new trading day
+  
+- **UseMaxDrawdown** (default: true): Enable maximum drawdown protection
+  
+- **MaxDrawdownPercent** (default: 15.0%): Maximum drawdown from peak balance
+  - Trading stops if drawdown from peak exceeds this %
+  - Prevents catastrophic losses during unfavorable market conditions
+  
+- **UseConsecutiveLossLimit** (default: true): Limit consecutive losing trades
+  
+- **MaxConsecutiveLosses** (default: 3): Stop trading after X consecutive losses
+  - Prevents revenge trading and emotional decision-making
+  - Resets to zero after a winning trade
 
 #### Position Management
 - **MagicNumber** (default: 191973): Unique identifier for this EA's trades
@@ -230,6 +276,27 @@ Lot Size = Risk Amount / (SL Distance in Money)
 
 The EA then normalizes and applies min/max limits.
 
+### Break-Even Management
+
+The EA automatically moves stop loss to break-even when profit reaches a threshold:
+
+**How It Works:**
+- When profit ≥ `BreakEvenPips` (default: 200 pips)
+- Move SL to entry price + `BreakEvenPlusPips` (default: 10 pips)
+- Ensures minimum profit even if price reverses
+
+**Example (BUY):**
+- Entry: 50,000
+- Current Price: 50,200 (200 pips profit)
+- Break-Even Triggered!
+- New SL: 50,010 (entry + 10 pips)
+- Result: Minimum 10 pips profit guaranteed
+
+**Benefits:**
+- Converts losing trades to break-even trades
+- Reduces stress by protecting entry price
+- Allows for tighter risk management
+
 ### Trailing Stop
 
 When price moves favorably:
@@ -246,6 +313,119 @@ When price moves favorably:
 - Current Price: 50,500 (500 pips profit)
 - New SL: 50,200 (300 pips below current price)
 - Locked Profit: 200 pips minimum
+
+### Trailing Profit
+
+The EA also trails the take profit to maximize gains:
+
+**How It Works:**
+- As price approaches TP, the EA moves TP closer
+- Maintains distance of `TrailingProfitPips` from current price
+- Moves by `TrailingProfitStepPips` increments
+
+**Example (BUY):**
+- Entry: 50,000
+- Original TP: 52,000
+- Current Price: 51,400 (approaching TP)
+- TP too close (only 600 pips away, less than trailing distance of 400)
+- New TP: 51,800 (400 pips above current price)
+- Result: Helps lock in profit before potential reversal
+
+**Benefits:**
+- Prevents giving back profits when price approaches target
+- Adapts to market momentum
+- Maximizes profit capture
+
+## Smart Risk Management System
+
+The EA includes multiple layers of protection to preserve capital:
+
+### 1. Daily Loss Limit
+
+**Purpose:** Prevents excessive losses in a single trading day
+
+**How It Works:**
+- Tracks daily starting balance at midnight (server time)
+- Calculates daily loss: (Start Balance - Current Balance)
+- If daily loss ≥ `MaxDailyLossPercent` (default: 5%):
+  - Immediately closes all open positions
+  - Stops opening new trades for the rest of the day
+  - Automatically resets at start of next day
+
+**Example:**
+- Daily Start Balance: $10,000
+- Max Daily Loss: 5% = $500
+- Current Balance: $9,450 (loss of $550)
+- **HALT TRIGGERED** - Trading stopped until tomorrow
+
+**Why It's Important:**
+- Prevents emotional trading after losses
+- Limits damage from bad trading days
+- Forces you to step back and reassess
+
+### 2. Maximum Drawdown Protection
+
+**Purpose:** Protects against large account drawdowns
+
+**How It Works:**
+- Tracks peak account balance (highest balance reached)
+- Calculates drawdown: (Peak Balance - Current Equity)
+- If drawdown ≥ `MaxDrawdownPercent` (default: 15%):
+  - Immediately closes all open positions
+  - Stops all trading until manually reset
+
+**Example:**
+- Peak Balance: $12,000
+- Current Equity: $10,000
+- Drawdown: $2,000 / $12,000 = 16.67%
+- **HALT TRIGGERED** - Max 15% limit exceeded
+
+**Why It's Important:**
+- Prevents catastrophic account losses
+- Identifies when strategy is not working
+- Protects capital during unfavorable market conditions
+
+### 3. Consecutive Loss Limit
+
+**Purpose:** Stops trading after series of losing trades
+
+**How It Works:**
+- Counts consecutive losing trades
+- Resets counter to zero after a winning trade
+- If consecutive losses ≥ `MaxConsecutiveLosses` (default: 3):
+  - Closes all open positions
+  - Stops trading until manually reset or settings adjusted
+
+**Example:**
+- Trade 1: Loss (-$50)
+- Trade 2: Loss (-$45)
+- Trade 3: Loss (-$55)
+- **HALT TRIGGERED** - 3 consecutive losses
+
+**Why It's Important:**
+- Prevents revenge trading
+- Identifies when market conditions don't suit the strategy
+- Forces pause for analysis and strategy review
+
+### Risk Management Best Practices
+
+**When Trading is Halted:**
+1. Review what went wrong (market conditions, news, etc.)
+2. Check if strategy parameters need adjustment
+3. Wait for more favorable market conditions
+4. Don't increase risk to "recover" losses
+5. Consider testing adjustments on demo first
+
+**Recommended Settings:**
+- **Conservative:** Daily Loss 3%, Drawdown 10%, Consecutive 2
+- **Moderate:** Daily Loss 5%, Drawdown 15%, Consecutive 3 (default)
+- **Aggressive:** Daily Loss 7%, Drawdown 20%, Consecutive 4
+
+**Important Notes:**
+- All limits can be disabled individually if desired
+- Manual reset may be required after halt (depends on cause)
+- These are safety nets, not guarantees against all losses
+- Combine with proper position sizing (1% risk per trade)
 
 ## Trading Strategy Examples
 
