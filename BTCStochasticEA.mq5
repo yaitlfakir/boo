@@ -120,9 +120,17 @@ int OnInit()
    handleATR = iATR(_Symbol, PERIOD_CURRENT, ATR_Period);
    
    //--- Check if indicators are created successfully
-   if(handleStochastic == INVALID_HANDLE || handleATR == INVALID_HANDLE)
+   if(handleStochastic == INVALID_HANDLE)
    {
-      Print("Error creating indicators");
+      Print("ERROR: Failed to create Stochastic indicator. Error code: ", GetLastError());
+      Print("Parameters: K=", Stoch_K_Period, " D=", Stoch_D_Period, " Slowing=", Stoch_Slowing);
+      return(INIT_FAILED);
+   }
+   
+   if(handleATR == INVALID_HANDLE)
+   {
+      Print("ERROR: Failed to create ATR indicator. Error code: ", GetLastError());
+      Print("Parameters: Period=", ATR_Period);
       return(INIT_FAILED);
    }
    
