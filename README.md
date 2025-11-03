@@ -25,6 +25,9 @@ An advanced EA that combines automatic position opening with sophisticated trail
 ### 7. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
 An automated trading EA that opens SELL positions based on Stochastic Oscillator crossover above 60 level, combined with momentum reversal and Moving Average confirmation.
 
+### 8. BTCStochasticEA - Bitcoin Trading with Stochastic (19,7,3) ⭐ NEW
+A fully automated Bitcoin trading EA using Stochastic Oscillator (19,7,3). Opens BUY when %K crosses above %D, SELL when %K crosses below %D. Features Bitcoin-optimized risk management with ATR-based dynamic stops and trailing stop functionality.
+
 ---
 
 ## TradingManager
