@@ -15,18 +15,22 @@ The EA monitors the relationship between four moving averages to identify strong
 ### Entry Signals
 
 #### BUY Signal Conditions
-The EA opens a **BUY** position when ALL of the following conditions are met:
+The EA opens a **BUY** position when the moving averages **CROSS INTO** the following arrangement:
 - **MA19 > MA38** (fast above medium-fast)
 - **MA38 > MA58** (medium-fast above medium-slow)
 - **MA58 < MA209** (medium-slow below long-term)
 
+**Important**: The signal only triggers when the MAs **transition** from a different arrangement into this configuration. This means the previous bar did NOT meet these conditions, but the current bar does. This prevents duplicate signals while MAs remain in the same order.
+
 **Interpretation**: This indicates an upward trend in the short and medium term, with the market still below the long-term average (potential for continued upside).
 
 #### SELL Signal Conditions
-The EA opens a **SELL** position when ALL of the following conditions are met:
+The EA opens a **SELL** position when the moving averages **CROSS INTO** the following arrangement:
 - **MA58 > MA38** (medium-slow above medium-fast)
 - **MA38 > MA19** (medium-fast above fast)
 - **MA19 > MA209** (fast above long-term)
+
+**Important**: The signal only triggers when the MAs **transition** from a different arrangement into this configuration. This means the previous bar did NOT meet these conditions, but the current bar does. This prevents duplicate signals while MAs remain in the same order.
 
 **Interpretation**: This indicates a downward trend developing with all shorter-term MAs descending from the medium-slow MA, while still above the long-term average (potential for continued downside).
 
@@ -214,8 +218,11 @@ MA Values: MA19=1.1234 | MA38=1.1230 | MA58=1.1225 | MA209=1.1240
 
 ### Signal Generation Process
 1. **Bar Formation**: EA waits for new bar to form (avoids repainting)
-2. **MA Calculation**: Retrieves current values of all 4 MAs
-3. **Condition Check**: Evaluates if BUY or SELL conditions are met
+2. **MA Calculation**: Retrieves current AND previous bar values of all 4 MAs
+3. **Crossover Detection**: Checks if MAs crossed INTO the desired arrangement
+   - Verifies current bar meets signal conditions
+   - Confirms previous bar did NOT meet signal conditions
+   - Only triggers on actual crossover transition
 4. **Pre-Trade Validation**: Checks spread, trading hours, position limits
 5. **Position Opening**: Executes trade with calculated lot size, SL, and TP
 6. **Trailing Management**: Continuously updates stop loss as position becomes profitable

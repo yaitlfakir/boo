@@ -14,36 +14,44 @@ All requested features have been successfully implemented:
 - All MAs use configurable method (default: SMA) and price (default: CLOSE)
 
 #### 2. BUY Signal Logic ✓
-**Condition**: MA19 > MA38 > MA58 AND MA58 < MA209
+**Condition**: MA19 > MA38 > MA58 AND MA58 < MA209 (with crossover detection)
 
 **Code Implementation**:
 ```cpp
-if(ma19_val > ma38_val && ma38_val > ma58_val && ma58_val < ma209_val)
+bool buyConditionCurrent = (ma19_val > ma38_val && ma38_val > ma58_val && ma58_val < ma209_val);
+bool buyConditionPrevious = (ma19_prev > ma38_prev && ma38_prev > ma58_prev && ma58_prev < ma209_prev);
+
+if(buyConditionCurrent && !buyConditionPrevious)
 {
-   return 1; // BUY
+   return 1; // BUY - MAs just crossed into desired arrangement
 }
 ```
 
-**Verification**: ✅ Correctly checks all three conditions:
+**Verification**: ✅ Correctly checks all conditions:
 - MA19 > MA38 ✓
 - MA38 > MA58 ✓
 - MA58 < MA209 ✓
+- Crossover detection (previous bar != current bar conditions) ✓
 
 #### 3. SELL Signal Logic ✓
-**Condition**: MA58 > MA38 > MA19 > MA209
+**Condition**: MA58 > MA38 > MA19 > MA209 (with crossover detection)
 
 **Code Implementation**:
 ```cpp
-if(ma58_val > ma38_val && ma38_val > ma19_val && ma19_val > ma209_val)
+bool sellConditionCurrent = (ma58_val > ma38_val && ma38_val > ma19_val && ma19_val > ma209_val);
+bool sellConditionPrevious = (ma58_prev > ma38_prev && ma38_prev > ma19_prev && ma19_prev > ma209_prev);
+
+if(sellConditionCurrent && !sellConditionPrevious)
 {
-   return -1; // SELL
+   return -1; // SELL - MAs just crossed into desired arrangement
 }
 ```
 
-**Verification**: ✅ Correctly checks all three conditions:
+**Verification**: ✅ Correctly checks all conditions:
 - MA58 > MA38 ✓
 - MA38 > MA19 ✓
 - MA19 > MA209 ✓
+- Crossover detection (previous bar != current bar conditions) ✓
 
 #### 4. Trailing Stop ✓
 **Implementation Features**:
@@ -82,6 +90,20 @@ if(ma58_val > ma38_val && ma38_val > ma19_val && ma19_val > ma209_val)
 **Code Verification**: ✅
 - Checks for new bar formation before signal generation
 - Uses confirmed bar data (index 1) not current bar (index 0)
+- Uses previous bar data (index 2) for crossover detection
+
+#### 7. Crossover Detection ✓
+**Implementation Features**:
+- Compares current bar conditions to previous bar conditions
+- Only triggers signal when MAs transition INTO desired arrangement
+- Prevents duplicate signals while MAs maintain same order
+- Ensures true crossover events are captured
+
+**Code Verification**: ✅
+- BUY: `buyConditionCurrent && !buyConditionPrevious`
+- SELL: `sellConditionCurrent && !sellConditionPrevious`
+- Prevents repeated signals for same arrangement
+- Only fires on actual crossover transition
 
 ### Risk Management Features
 

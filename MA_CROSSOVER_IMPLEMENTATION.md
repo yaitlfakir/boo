@@ -29,8 +29,8 @@ The request was to create an EA that:
 | MA38 indicator | ✅ Complete | Simple Moving Average, 38 periods, configurable |
 | MA58 indicator | ✅ Complete | Simple Moving Average, 58 periods, configurable |
 | MA209 indicator | ✅ Complete | Simple Moving Average, 209 periods, configurable |
-| BUY logic | ✅ Complete | MA19 > MA38 > MA58 AND MA58 < MA209 |
-| SELL logic | ✅ Complete | MA58 > MA38 > MA19 > MA209 |
+| BUY logic | ✅ Complete | MA19 > MA38 > MA58 AND MA58 < MA209 (crossover detection) |
+| SELL logic | ✅ Complete | MA58 > MA38 > MA19 > MA209 (crossover detection) |
 | Trailing stop | ✅ Complete | 20 pips distance, 5 pips step, auto-activation |
 | Take profit | ✅ Complete | 60 pips (2:1 R:R ratio) |
 | 1-minute chart | ✅ Complete | Designed and optimized for M1 timeframe |
@@ -48,16 +48,24 @@ handleMA58 = iMA(_Symbol, PERIOD_CURRENT, MA58_Period, 0, MA_Method, MA_Price);
 handleMA209 = iMA(_Symbol, PERIOD_CURRENT, MA209_Period, 0, MA_Method, MA_Price);
 ```
 
-#### 2. Signal Logic
+#### 2. Signal Logic (Crossover Detection)
 ```mql5
-// BUY Signal
-if(ma19_val > ma38_val && ma38_val > ma58_val && ma58_val < ma209_val)
-   return 1; // BUY
+// BUY Signal - Only triggers on crossover transition
+bool buyConditionCurrent = (ma19_val > ma38_val && ma38_val > ma58_val && ma58_val < ma209_val);
+bool buyConditionPrevious = (ma19_prev > ma38_prev && ma38_prev > ma58_prev && ma58_prev < ma209_prev);
 
-// SELL Signal
-if(ma58_val > ma38_val && ma38_val > ma19_val && ma19_val > ma209_val)
-   return -1; // SELL
+if(buyConditionCurrent && !buyConditionPrevious)
+   return 1; // BUY - MAs just crossed into desired arrangement
+
+// SELL Signal - Only triggers on crossover transition
+bool sellConditionCurrent = (ma58_val > ma38_val && ma38_val > ma19_val && ma19_val > ma209_val);
+bool sellConditionPrevious = (ma58_prev > ma38_prev && ma38_prev > ma19_prev && ma19_prev > ma209_prev);
+
+if(sellConditionCurrent && !sellConditionPrevious)
+   return -1; // SELL - MAs just crossed into desired arrangement
 ```
+
+**Key Feature**: The EA detects true crossovers by comparing current and previous bar conditions. This prevents duplicate signals while MAs remain in the same arrangement.
 
 #### 3. Trade Execution
 - Position sizing based on risk percentage
