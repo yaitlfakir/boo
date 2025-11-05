@@ -87,8 +87,9 @@ int OnInit()
    Print("===========================================");
    Print("MACrossoverEA initialized successfully");
    Print("Recommended Timeframe: M1 (1 minute)");
-   Print("BUY when: MA19 > MA38 > MA58 AND MA58 < MA209");
-   Print("SELL when: MA58 > MA38 > MA19 > MA209");
+   Print("BUY when MAs CROSS to: MA19 > MA38 > MA58 < MA209");
+   Print("SELL when MAs CROSS to: MA58 > MA38 > MA19 > MA209");
+   Print("Crossover detection: Only triggers on transition");
    Print("===========================================");
    
    return(INIT_SUCCEEDED);
@@ -170,18 +171,30 @@ int GetTradingSignal()
    double ma58_val = ma58[1];
    double ma209_val = ma209[1];
    
+   // Previous bar values (index 2) to detect crossover
+   double ma19_prev = ma19[2];
+   double ma38_prev = ma38[2];
+   double ma58_prev = ma58[2];
+   double ma209_prev = ma209[2];
+   
    // BUY Signal: MA19 > MA38 > MA58 AND MA58 < MA209
-   // This means: MA19 > MA38 > MA58 < MA209
-   if(ma19_val > ma38_val && ma38_val > ma58_val && ma58_val < ma209_val)
+   // Only trigger if this arrangement was NOT present in previous bar (crossover)
+   bool buyConditionCurrent = (ma19_val > ma38_val && ma38_val > ma58_val && ma58_val < ma209_val);
+   bool buyConditionPrevious = (ma19_prev > ma38_prev && ma38_prev > ma58_prev && ma58_prev < ma209_prev);
+   
+   if(buyConditionCurrent && !buyConditionPrevious)
    {
-      return 1; // BUY
+      return 1; // BUY - MAs just crossed into desired arrangement
    }
    
    // SELL Signal: MA58 > MA38 > MA19 > MA209
-   // This means all MAs are in descending order with MA58 at top and MA209 at bottom
-   if(ma58_val > ma38_val && ma38_val > ma19_val && ma19_val > ma209_val)
+   // Only trigger if this arrangement was NOT present in previous bar (crossover)
+   bool sellConditionCurrent = (ma58_val > ma38_val && ma38_val > ma19_val && ma19_val > ma209_val);
+   bool sellConditionPrevious = (ma58_prev > ma38_prev && ma38_prev > ma19_prev && ma19_prev > ma209_prev);
+   
+   if(sellConditionCurrent && !sellConditionPrevious)
    {
-      return -1; // SELL
+      return -1; // SELL - MAs just crossed into desired arrangement
    }
    
    return 0; // No signal
