@@ -28,6 +28,9 @@ An automated trading EA that opens SELL positions based on Stochastic Oscillator
 ### 8. BTCStochasticEA - Bitcoin Trading with Stochastic (19,7,3) ⭐ NEW
 A fully automated Bitcoin trading EA using Stochastic Oscillator (19,7,3). Opens BUY when %K crosses above %D, SELL when %K crosses below %D. Features Bitcoin-optimized risk management with ATR-based dynamic stops and trailing stop functionality.
 
+### 9. MACrossoverEA - 4 Moving Average Crossover Strategy ⭐ NEW
+An automated trading EA using 4 Moving Averages (MA19, MA38, MA58, MA209) for precise trend detection. Opens BUY when MA19 > MA38 > MA58 < MA209, SELL when MA58 > MA38 > MA19 > MA209. Features trailing stop and take profit functionality. Designed for M1 (1-minute) timeframe.
+
 ---
 
 ## TradingManager
@@ -1230,6 +1233,279 @@ See [BTC_STOCHASTIC_QUICKSTART.md](BTC_STOCHASTIC_QUICKSTART.md) for:
 - Check position is profitable enough to activate trailing
 - Look for trailing messages in Experts tab
 - Ensure broker respects stop level requirements
+
+---
+
+## MACrossoverEA
+
+### Overview
+**MACrossoverEA** is an automated trading Expert Advisor that uses a 4 Moving Average crossover strategy to identify precise trading opportunities. The EA monitors the relationship between MA19, MA38, MA58, and MA209 to generate buy and sell signals based on specific MA alignments. Designed specifically for the **M1 (1-minute)** timeframe with comprehensive trailing stop and take profit management.
+
+### Trading Strategy
+
+The EA uses four moving averages to identify trend conditions:
+- **MA19** (Fast) - Short-term trend
+- **MA38** (Medium-Fast) - Medium-term trend
+- **MA58** (Medium-Slow) - Medium-term confirmation
+- **MA209** (Slow) - Long-term trend filter
+
+**BUY Signal**: Opens long position when **MA19 > MA38 > MA58 < MA209**
+- Indicates upward momentum in short/medium term
+- Price still below long-term average (room for upside)
+
+**SELL Signal**: Opens short position when **MA58 > MA38 > MA19 > MA209**
+- Indicates downward trend developing
+- All shorter MAs in descending order
+- Still above long-term average (room for downside)
+
+### Key Features
+
+#### Precise Signal Detection
+- **4 MA Analysis**: Monitors exact relationship between all four moving averages
+- **Specific Entry Conditions**: Only trades when precise MA alignment is met
+- **No Repainting**: Uses confirmed bar data for reliable signals
+- **M1 Optimized**: Designed for 1-minute timeframe trading
+
+#### Risk Management
+- **Position Sizing**: Automatic lot calculation based on risk percentage
+- **Fixed Stop Loss**: Configurable SL distance (default: 30 pips)
+- **Fixed Take Profit**: Configurable TP distance (default: 60 pips = 2:1 R:R)
+- **Spread Filter**: Avoids trading during high spread conditions (max 3 pips)
+- **Position Limit**: Controls concurrent positions (default: 1)
+
+#### Trailing Stop Feature
+- **Dynamic Stop Loss**: Automatically locks in profits as trade moves favorably
+- **Configurable Distance**: Trail distance (default: 20 pips)
+- **Step Control**: Only updates when price moves by step amount (default: 5 pips)
+- **Profit Protection**: Only activates when position is profitable
+- **One-Way Movement**: Never loosens stop loss
+
+#### Position Management
+- **Magic Number**: Unique identifier (789012) for trade tracking
+- **Trade Comments**: All trades labeled "MACrossEA"
+- **Continuous Monitoring**: Real-time trailing stop updates
+- **Clean Execution**: Proper SL/TP placement on every trade
+
+### Installation
+
+1. Open MetaTrader 5
+2. Click `File` → `Open Data Folder`
+3. Navigate to `MQL5/Experts/`
+4. Copy `MACrossoverEA.mq5` to this folder
+5. Restart MetaTrader 5 or click `Refresh` in Navigator
+6. The EA appears under "Expert Advisors" in Navigator
+
+### Quick Start Configuration
+
+#### Conservative (Recommended for Beginners)
+- **Timeframe**: M1 (1 minute) - REQUIRED
+- **RiskPercent**: 0.5%
+- **StopLossPips**: 30
+- **TakeProfitPips**: 60
+- **UseTrailingStop**: true
+- **TrailingStopPips**: 20
+- **MaxOpenPositions**: 1
+
+#### Moderate (Balanced Risk)
+- **Timeframe**: M1 (1 minute) - REQUIRED
+- **RiskPercent**: 1.0%
+- **StopLossPips**: 30
+- **TakeProfitPips**: 60
+- **UseTrailingStop**: true
+- **TrailingStopPips**: 20
+- **MaxOpenPositions**: 1
+
+#### Aggressive (Higher Risk - Experienced Only)
+- **Timeframe**: M1 (1 minute) - REQUIRED
+- **RiskPercent**: 2.0%
+- **StopLossPips**: 25
+- **TakeProfitPips**: 50
+- **UseTrailingStop**: true
+- **TrailingStopPips**: 15
+- **MaxOpenPositions**: 2
+
+### Usage
+
+1. **Attach to Chart**:
+   - Open any currency pair chart (EURUSD, GBPUSD, USDJPY recommended)
+   - **IMPORTANT**: Set timeframe to **M1 (1 minute)**
+   - Drag and drop MACrossoverEA from Navigator to chart
+
+2. **Configure Settings**:
+   - Adjust parameters based on your risk tolerance
+   - Leave MA periods at defaults (19, 38, 58, 209) initially
+   - Enable desired features (trailing stop recommended)
+
+3. **Enable Auto Trading**:
+   - Click "AutoTrading" button in toolbar (or press Alt+A)
+   - Verify green checkmark appears in top-right corner
+   - Check Experts tab for initialization message
+
+4. **Monitor Performance**:
+   - Watch Experts tab for signal detection and trade execution
+   - Review open positions in Trade tab
+   - Monitor closed trades in History tab
+   - Observe trailing stop adjustments
+
+### How the Strategy Works
+
+**Signal Generation Process**:
+1. New bar forms on M1 chart
+2. EA retrieves current values of all 4 moving averages
+3. Checks if BUY conditions met: MA19 > MA38 > MA58 < MA209
+4. Checks if SELL conditions met: MA58 > MA38 > MA19 > MA209
+5. Validates spread, position limits, trading hours
+6. Opens position with calculated lot size, SL, and TP
+7. Continuously manages trailing stop to lock in profits
+
+**Example BUY Trade**:
+```
+Market Condition:
+MA19 = 1.1050 (highest)
+MA38 = 1.1045
+MA58 = 1.1040
+MA209 = 1.1055 (MA58 < MA209 ✓)
+
+Signal: BUY (MA19 > MA38 > MA58 < MA209)
+
+Trade:
+Entry: 1.1050
+SL: 1.1020 (-30 pips)
+TP: 1.1110 (+60 pips)
+Lot: 0.10 (based on 1% risk)
+
+Trailing:
+Price → 1.1070: SL moves to 1.1050
+Price → 1.1090: SL moves to 1.1070
+Price → 1.1110: TP hit, +60 pips profit
+```
+
+### Strategy Testing
+
+To backtest the EA:
+1. Press Ctrl+R to open Strategy Tester
+2. Select "MACrossoverEA" from Expert Advisor list
+3. Choose symbol (EURUSD recommended)
+4. **Select M1 (1-minute) timeframe** (CRITICAL)
+5. Set date range (minimum 3 months)
+6. Select "Every tick" model for accuracy
+7. Configure input parameters
+8. Click "Start" to run backtest
+
+### Documentation
+
+See [MA_CROSSOVER_EA.md](MA_CROSSOVER_EA.md) for comprehensive documentation including:
+- Detailed strategy explanation
+- Complete parameter descriptions
+- Configuration profiles
+- Trading examples
+- Troubleshooting guide
+- Best practices and tips
+
+See [MA_CROSSOVER_QUICKSTART.md](MA_CROSSOVER_QUICKSTART.md) for:
+- 5-minute setup guide
+- Quick reference for signals
+- Common questions
+- Basic usage tips
+
+### Important Notes
+
+✅ **This EA Provides**:
+- Automated trading based on 4 MA crossover signals
+- Precise entry conditions (MA19 > MA38 > MA58 < MA209 for BUY)
+- Precise exit conditions (MA58 > MA38 > MA19 > MA209 for SELL)
+- Trailing stop to lock in profits
+- Risk-based position sizing
+- Designed specifically for M1 timeframe
+
+❌ **This EA Does NOT**:
+- Guarantee profits or eliminate losses
+- Work optimally on timeframes other than M1 without testing
+- Replace proper market analysis and understanding
+- Generate signals in all market conditions
+- Eliminate the need for monitoring
+
+### Best Practices
+
+**Setup**:
+- Use M1 (1-minute) timeframe as specified
+- Start with conservative risk (0.5%)
+- Test on demo for 30+ days minimum
+- Use major currency pairs (EURUSD, GBPUSD, USDJPY)
+- Keep MetaTrader running (or use VPS)
+
+**Risk Management**:
+- Never risk more than 2% per trade
+- Use trailing stop feature (recommended)
+- Monitor spread conditions
+- Keep position limits reasonable (1-2 max)
+- Test any parameter changes on demo first
+
+**Monitoring**:
+- Check Experts tab for signals and errors
+- Review trailing stop adjustments
+- Track win rate and profit factor
+- Be aware of news events
+- Adjust parameters based on results (after demo testing)
+
+### Risk Warnings
+
+⚠️ **CRITICAL DISCLAIMERS**:
+
+**High Risk Trading**:
+- Forex trading carries substantial risk of loss
+- M1 timeframe can be very active with frequent trades
+- You can lose 100% of your trading capital
+- Past performance does not guarantee future results
+
+**EA Specific Risks**:
+- MA crossover strategies can generate false signals in ranging markets
+- Signal frequency varies with market conditions
+- Trailing stop does not eliminate risk of loss
+- Slippage and gaps can occur
+
+**Required Actions**:
+1. Test extensively on demo account (30+ days minimum)
+2. Start with 0.5% risk and minimum lot sizes
+3. Use M1 timeframe as designed
+4. Monitor EA performance regularly
+5. Understand the strategy before live trading
+
+**No Guarantees**:
+- This EA does not guarantee profits
+- No trading system is infallible
+- Market conditions can change
+- Always use proper risk management
+
+### Troubleshooting
+
+**EA Not Trading**:
+- Verify AutoTrading is enabled
+- Confirm chart timeframe is M1
+- Check spread is acceptable (< MaxSpreadPips)
+- Verify MA conditions are met
+- Check position limit not reached
+
+**No Signals Appearing**:
+- Be patient - requires specific MA alignments
+- Verify timeframe is M1
+- Check current MA values
+- Market may be in consolidation
+- Consider reviewing on different currency pairs
+
+**Trailing Stop Not Working**:
+- Ensure UseTrailingStop = true
+- Position must be profitable first
+- Check Experts tab for modification messages
+- Verify broker allows SL modifications
+- TrailingStepPips may need adjustment
+
+**Orders Rejected**:
+- Check account balance and margin
+- Verify lot size is within broker limits
+- Ensure StopLossPips meets broker requirements
+- Check if market is open
+- Review error messages in Experts tab
 
 ---
 
