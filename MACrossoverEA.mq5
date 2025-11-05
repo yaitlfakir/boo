@@ -165,6 +165,13 @@ void OnTick()
 //+------------------------------------------------------------------+
 int GetTradingSignal()
 {
+   // Ensure we have enough data for crossover detection (need indices 1 and 2)
+   if(ArraySize(ma19) < 3 || ArraySize(ma38) < 3 || 
+      ArraySize(ma58) < 3 || ArraySize(ma209) < 3)
+   {
+      return 0; // Not enough data for crossover detection
+   }
+   
    // Use current bar (index 1) to avoid repainting
    double ma19_val = ma19[1];
    double ma38_val = ma38[1];
