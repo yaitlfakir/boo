@@ -34,6 +34,20 @@ input bool     UseTimeFilter = false;     // Use Time Filter
 input int      StartHour = 8;             // Start Trading Hour
 input int      EndHour = 20;              // End Trading Hour
 
+input group "=== Stochastic Filters ==="
+input double   BuyStochLevel = 40.0;      // Buy only when Stochastic < this level
+input double   SellStochLevel = 60.0;     // Sell only when Stochastic > this level
+
+input group "=== Trailing Stop Settings ==="
+input bool     UseTrailingStop = true;    // Enable Trailing Stop
+input double   TrailingStopPips = 20.0;   // Trailing Stop Distance (pips)
+input double   TrailingStepPips = 5.0;    // Trailing Step (pips)
+
+input group "=== Trailing Profit Settings ==="
+input bool     UseTrailingProfit = true;  // Enable Trailing Take Profit
+input double   TrailingProfitPips = 30.0; // Trailing Profit Distance (pips)
+input double   TrailingProfitStep = 5.0;  // Trailing Profit Step (pips)
+
 //--- Global Variables
 CTrade trade;
 
@@ -146,6 +160,114 @@ void OnTick()
       OpenSellOrder();
    else if(buySignal)
       OpenBuyOrder();
+   
+   //--- Manage existing positions (trailing stop and trailing profit)
+   ManageOpenPositions();
+}
+
+//+------------------------------------------------------------------+
+//| Manage Open Positions - Trailing Stop and Trailing Profit       |
+//+------------------------------------------------------------------+
+void ManageOpenPositions()
+{
+   if(!UseTrailingStop && !UseTrailingProfit)
+      return;  // Nothing to do if both features are disabled
+   
+   double point = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
+   int digits = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
+   
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket <= 0) continue;
+      
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if(PositionGetInteger(POSITION_MAGIC) != MagicNumber) continue;
+      
+      double positionOpenPrice = PositionGetDouble(POSITION_PRICE_OPEN);
+      double currentSL = PositionGetDouble(POSITION_SL);
+      double currentTP = PositionGetDouble(POSITION_TP);
+      long positionType = PositionGetInteger(POSITION_TYPE);
+      
+      double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+      double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+      
+      double newSL = currentSL;
+      double newTP = currentTP;
+      bool modifyNeeded = false;
+      
+      if(positionType == POSITION_TYPE_BUY)
+      {
+         //--- Trailing Stop for BUY
+         if(UseTrailingStop && bid > positionOpenPrice)
+         {
+            double trailStopPrice = bid - TrailingStopPips * 10 * point;
+            
+            // Only move SL if new SL is higher than current and price moved enough
+            if(currentSL == 0 || (trailStopPrice > currentSL && (trailStopPrice - currentSL) >= TrailingStepPips * 10 * point))
+            {
+               newSL = NormalizeDouble(trailStopPrice, digits);
+               modifyNeeded = true;
+            }
+         }
+         
+         //--- Trailing Profit for BUY
+         if(UseTrailingProfit && bid > positionOpenPrice)
+         {
+            double trailProfitPrice = bid + TrailingProfitPips * 10 * point;
+            
+            // Move TP closer to price as it moves up, or set it if not set
+            if(currentTP == 0 || (trailProfitPrice > currentTP && (trailProfitPrice - currentTP) >= TrailingProfitStep * 10 * point))
+            {
+               newTP = NormalizeDouble(trailProfitPrice, digits);
+               modifyNeeded = true;
+            }
+         }
+      }
+      else if(positionType == POSITION_TYPE_SELL)
+      {
+         //--- Trailing Stop for SELL
+         if(UseTrailingStop && ask < positionOpenPrice)
+         {
+            double trailStopPrice = ask + TrailingStopPips * 10 * point;
+            
+            // Only move SL if new SL is lower than current and price moved enough
+            if(currentSL == 0 || (trailStopPrice < currentSL && (currentSL - trailStopPrice) >= TrailingStepPips * 10 * point))
+            {
+               newSL = NormalizeDouble(trailStopPrice, digits);
+               modifyNeeded = true;
+            }
+         }
+         
+         //--- Trailing Profit for SELL
+         if(UseTrailingProfit && ask < positionOpenPrice)
+         {
+            double trailProfitPrice = ask - TrailingProfitPips * 10 * point;
+            
+            // Move TP closer to price as it moves down, or set it if not set
+            if(currentTP == 0 || (trailProfitPrice < currentTP && (currentTP - trailProfitPrice) >= TrailingProfitStep * 10 * point))
+            {
+               newTP = NormalizeDouble(trailProfitPrice, digits);
+               modifyNeeded = true;
+            }
+         }
+      }
+      
+      //--- Modify position if needed
+      if(modifyNeeded && (newSL != currentSL || newTP != currentTP))
+      {
+         if(trade.PositionModify(ticket, newSL, newTP))
+         {
+            Print("Position #", ticket, " modified successfully.");
+            Print("  New Stop Loss: ", newSL);
+            Print("  New Take Profit: ", newTP);
+         }
+         else
+         {
+            Print("Error modifying position #", ticket, ": ", GetLastError());
+         }
+      }
+   }
 }
 
 //+------------------------------------------------------------------+
@@ -180,10 +302,14 @@ bool CheckSellSignal()
    
    bool m15_condition = m15_current && m15_previous;
    
+   //--- Check stochastic level: must be > 60 for sell signal
+   bool stoch_level_ok = stochMain_M1[0] > SellStochLevel;
+   
    //--- All conditions must be true for sell signal
-   if(m1_condition && m5_condition && m15_condition)
+   if(m1_condition && m5_condition && m15_condition && stoch_level_ok)
    {
       Print("===== SELL SIGNAL DETECTED =====");
+      Print("Stochastic Level Check: K=", stochMain_M1[0], " > ", SellStochLevel, " (", stoch_level_ok, ")");
       Print("M1: Current K=", stochMain_M1[0], " D=", stochSignal_M1[0], " (K<D: ", m1_current, ")");
       Print("M1: Last K=", stochMain_M1[1], " D=", stochSignal_M1[1], " (K<D: ", m1_last, ")");
       Print("M1: Before[2] K=", stochMain_M1[2], " D=", stochSignal_M1[2], " (D<K: ", m1_before2, ")");
@@ -230,10 +356,14 @@ bool CheckBuySignal()
    
    bool m15_condition = m15_current && m15_previous;
    
+   //--- Check stochastic level: must be < 40 for buy signal
+   bool stoch_level_ok = stochMain_M1[0] < BuyStochLevel;
+   
    //--- All conditions must be true for buy signal
-   if(m1_condition && m5_condition && m15_condition)
+   if(m1_condition && m5_condition && m15_condition && stoch_level_ok)
    {
       Print("===== BUY SIGNAL DETECTED =====");
+      Print("Stochastic Level Check: K=", stochMain_M1[0], " < ", BuyStochLevel, " (", stoch_level_ok, ")");
       Print("M1: Current K=", stochMain_M1[0], " D=", stochSignal_M1[0], " (K>D: ", m1_current, ")");
       Print("M1: Last K=", stochMain_M1[1], " D=", stochSignal_M1[1], " (K>D: ", m1_last, ")");
       Print("M1: Before[2] K=", stochMain_M1[2], " D=", stochSignal_M1[2], " (D>K: ", m1_before2, ")");
