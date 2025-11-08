@@ -135,17 +135,17 @@ void OnTick()
    if(!IsSpreadAcceptable())
       return;
    
-   //--- Copy stochastic data for M1 (need 4 candles: 0=current, 1=last, 2,3=previous two)
-   if(CopyBuffer(handleStoch_M1, 0, 0, 4, stochMain_M1) < 4) return;      // Main line (K)
-   if(CopyBuffer(handleStoch_M1, 1, 0, 4, stochSignal_M1) < 4) return;    // Signal line (D)
+   //--- Copy stochastic data for M1 (need 5 candles: 1=last completed, 2=before last, 3,4=previous two completed)
+   if(CopyBuffer(handleStoch_M1, 0, 0, 5, stochMain_M1) < 5) return;      // Main line (K)
+   if(CopyBuffer(handleStoch_M1, 1, 0, 5, stochSignal_M1) < 5) return;    // Signal line (D)
    
-   //--- Copy stochastic data for M5 (need 2 candles: 0=current, 1=previous)
-   if(CopyBuffer(handleStoch_M5, 0, 0, 2, stochMain_M5) < 2) return;      // Main line (K)
-   if(CopyBuffer(handleStoch_M5, 1, 0, 2, stochSignal_M5) < 2) return;    // Signal line (D)
+   //--- Copy stochastic data for M5 (need 3 candles: 1=last completed, 2=before last)
+   if(CopyBuffer(handleStoch_M5, 0, 0, 3, stochMain_M5) < 3) return;      // Main line (K)
+   if(CopyBuffer(handleStoch_M5, 1, 0, 3, stochSignal_M5) < 3) return;    // Signal line (D)
    
-   //--- Copy stochastic data for M15 (need 2 candles: 0=current, 1=previous)
-   if(CopyBuffer(handleStoch_M15, 0, 0, 2, stochMain_M15) < 2) return;    // Main line (K)
-   if(CopyBuffer(handleStoch_M15, 1, 0, 2, stochSignal_M15) < 2) return;  // Signal line (D)
+   //--- Copy stochastic data for M15 (need 3 candles: 1=last completed, 2=before last)
+   if(CopyBuffer(handleStoch_M15, 0, 0, 3, stochMain_M15) < 3) return;    // Main line (K)
+   if(CopyBuffer(handleStoch_M15, 1, 0, 3, stochSignal_M15) < 3) return;  // Signal line (D)
    
    //--- Check if we can open new positions
    if(CountOpenPositions() >= MaxPositions)
@@ -275,49 +275,49 @@ void ManageOpenPositions()
 //+------------------------------------------------------------------+
 bool CheckSellSignal()
 {
-   //--- M1 Conditions:
-   //    1. Current candle (0): K < D
-   //    2. Last candle (1): K < D
-   //    3. Last 2 candles before (2, 3): D < K
-   bool m1_current = stochMain_M1[0] < stochSignal_M1[0];
+   //--- M1 Conditions (using completed candles only):
+   //    1. Last completed candle (1): K < D
+   //    2. Before last candle (2): K < D
+   //    3. 2 candles before (3, 4): D < K (previous opposite momentum)
    bool m1_last = stochMain_M1[1] < stochSignal_M1[1];
-   bool m1_before2 = stochSignal_M1[2] < stochMain_M1[2];
+   bool m1_before_last = stochMain_M1[2] < stochSignal_M1[2];
    bool m1_before3 = stochSignal_M1[3] < stochMain_M1[3];
+   bool m1_before4 = stochSignal_M1[4] < stochMain_M1[4];
    
-   bool m1_condition = m1_current && m1_last && m1_before2 && m1_before3;
+   bool m1_condition = m1_last && m1_before_last && m1_before3 && m1_before4;
    
-   //--- M5 Conditions:
-   //    1. Current candle (0): K < D
-   //    2. Previous candle (1): K < D
-   bool m5_current = stochMain_M5[0] < stochSignal_M5[0];
-   bool m5_previous = stochMain_M5[1] < stochSignal_M5[1];
+   //--- M5 Conditions (using completed candles only):
+   //    1. Last completed candle (1): K < D
+   //    2. Before last candle (2): K < D
+   bool m5_last = stochMain_M5[1] < stochSignal_M5[1];
+   bool m5_before_last = stochMain_M5[2] < stochSignal_M5[2];
    
-   bool m5_condition = m5_current && m5_previous;
+   bool m5_condition = m5_last && m5_before_last;
    
-   //--- M15 Conditions:
-   //    1. Current candle (0): K < D
-   //    2. Previous candle (1): K < D
-   bool m15_current = stochMain_M15[0] < stochSignal_M15[0];
-   bool m15_previous = stochMain_M15[1] < stochSignal_M15[1];
+   //--- M15 Conditions (using completed candles only):
+   //    1. Last completed candle (1): K < D
+   //    2. Before last candle (2): K < D
+   bool m15_last = stochMain_M15[1] < stochSignal_M15[1];
+   bool m15_before_last = stochMain_M15[2] < stochSignal_M15[2];
    
-   bool m15_condition = m15_current && m15_previous;
+   bool m15_condition = m15_last && m15_before_last;
    
-   //--- Check stochastic level: must be > 60 for sell signal
-   bool stoch_level_ok = stochMain_M1[0] > SellStochLevel;
+   //--- Check stochastic level: must be > 60 for sell signal (using last completed candle)
+   bool stoch_level_ok = stochMain_M1[1] > SellStochLevel;
    
    //--- All conditions must be true for sell signal
    if(m1_condition && m5_condition && m15_condition && stoch_level_ok)
    {
       Print("===== SELL SIGNAL DETECTED =====");
-      Print("Stochastic Level Check: K=", stochMain_M1[0], " > ", SellStochLevel, " (", stoch_level_ok, ")");
-      Print("M1: Current K=", stochMain_M1[0], " D=", stochSignal_M1[0], " (K<D: ", m1_current, ")");
-      Print("M1: Last K=", stochMain_M1[1], " D=", stochSignal_M1[1], " (K<D: ", m1_last, ")");
-      Print("M1: Before[2] K=", stochMain_M1[2], " D=", stochSignal_M1[2], " (D<K: ", m1_before2, ")");
+      Print("Stochastic Level Check: K=", stochMain_M1[1], " > ", SellStochLevel, " (", stoch_level_ok, ")");
+      Print("M1: Last[1] K=", stochMain_M1[1], " D=", stochSignal_M1[1], " (K<D: ", m1_last, ")");
+      Print("M1: Before[2] K=", stochMain_M1[2], " D=", stochSignal_M1[2], " (K<D: ", m1_before_last, ")");
       Print("M1: Before[3] K=", stochMain_M1[3], " D=", stochSignal_M1[3], " (D<K: ", m1_before3, ")");
-      Print("M5: Current K=", stochMain_M5[0], " D=", stochSignal_M5[0], " (K<D: ", m5_current, ")");
-      Print("M5: Previous K=", stochMain_M5[1], " D=", stochSignal_M5[1], " (K<D: ", m5_previous, ")");
-      Print("M15: Current K=", stochMain_M15[0], " D=", stochSignal_M15[0], " (K<D: ", m15_current, ")");
-      Print("M15: Previous K=", stochMain_M15[1], " D=", stochSignal_M15[1], " (K<D: ", m15_previous, ")");
+      Print("M1: Before[4] K=", stochMain_M1[4], " D=", stochSignal_M1[4], " (D<K: ", m1_before4, ")");
+      Print("M5: Last[1] K=", stochMain_M5[1], " D=", stochSignal_M5[1], " (K<D: ", m5_last, ")");
+      Print("M5: Before[2] K=", stochMain_M5[2], " D=", stochSignal_M5[2], " (K<D: ", m5_before_last, ")");
+      Print("M15: Last[1] K=", stochMain_M15[1], " D=", stochSignal_M15[1], " (K<D: ", m15_last, ")");
+      Print("M15: Before[2] K=", stochMain_M15[2], " D=", stochSignal_M15[2], " (K<D: ", m15_before_last, ")");
       return true;
    }
    
@@ -329,49 +329,49 @@ bool CheckSellSignal()
 //+------------------------------------------------------------------+
 bool CheckBuySignal()
 {
-   //--- M1 Conditions:
-   //    1. Current candle (0): K > D
-   //    2. Last candle (1): K > D
-   //    3. Last 2 candles before (2, 3): D > K
-   bool m1_current = stochMain_M1[0] > stochSignal_M1[0];
+   //--- M1 Conditions (using completed candles only):
+   //    1. Last completed candle (1): K > D
+   //    2. Before last candle (2): K > D
+   //    3. 2 candles before (3, 4): D > K (previous opposite momentum)
    bool m1_last = stochMain_M1[1] > stochSignal_M1[1];
-   bool m1_before2 = stochSignal_M1[2] > stochMain_M1[2];
+   bool m1_before_last = stochMain_M1[2] > stochSignal_M1[2];
    bool m1_before3 = stochSignal_M1[3] > stochMain_M1[3];
+   bool m1_before4 = stochSignal_M1[4] > stochMain_M1[4];
    
-   bool m1_condition = m1_current && m1_last && m1_before2 && m1_before3;
+   bool m1_condition = m1_last && m1_before_last && m1_before3 && m1_before4;
    
-   //--- M5 Conditions:
-   //    1. Current candle (0): K > D
-   //    2. Previous candle (1): K > D
-   bool m5_current = stochMain_M5[0] > stochSignal_M5[0];
-   bool m5_previous = stochMain_M5[1] > stochSignal_M5[1];
+   //--- M5 Conditions (using completed candles only):
+   //    1. Last completed candle (1): K > D
+   //    2. Before last candle (2): K > D
+   bool m5_last = stochMain_M5[1] > stochSignal_M5[1];
+   bool m5_before_last = stochMain_M5[2] > stochSignal_M5[2];
    
-   bool m5_condition = m5_current && m5_previous;
+   bool m5_condition = m5_last && m5_before_last;
    
-   //--- M15 Conditions:
-   //    1. Current candle (0): K > D
-   //    2. Previous candle (1): K > D
-   bool m15_current = stochMain_M15[0] > stochSignal_M15[0];
-   bool m15_previous = stochMain_M15[1] > stochSignal_M15[1];
+   //--- M15 Conditions (using completed candles only):
+   //    1. Last completed candle (1): K > D
+   //    2. Before last candle (2): K > D
+   bool m15_last = stochMain_M15[1] > stochSignal_M15[1];
+   bool m15_before_last = stochMain_M15[2] > stochSignal_M15[2];
    
-   bool m15_condition = m15_current && m15_previous;
+   bool m15_condition = m15_last && m15_before_last;
    
-   //--- Check stochastic level: must be < 40 for buy signal
-   bool stoch_level_ok = stochMain_M1[0] < BuyStochLevel;
+   //--- Check stochastic level: must be < 40 for buy signal (using last completed candle)
+   bool stoch_level_ok = stochMain_M1[1] < BuyStochLevel;
    
    //--- All conditions must be true for buy signal
    if(m1_condition && m5_condition && m15_condition && stoch_level_ok)
    {
       Print("===== BUY SIGNAL DETECTED =====");
-      Print("Stochastic Level Check: K=", stochMain_M1[0], " < ", BuyStochLevel, " (", stoch_level_ok, ")");
-      Print("M1: Current K=", stochMain_M1[0], " D=", stochSignal_M1[0], " (K>D: ", m1_current, ")");
-      Print("M1: Last K=", stochMain_M1[1], " D=", stochSignal_M1[1], " (K>D: ", m1_last, ")");
-      Print("M1: Before[2] K=", stochMain_M1[2], " D=", stochSignal_M1[2], " (D>K: ", m1_before2, ")");
+      Print("Stochastic Level Check: K=", stochMain_M1[1], " < ", BuyStochLevel, " (", stoch_level_ok, ")");
+      Print("M1: Last[1] K=", stochMain_M1[1], " D=", stochSignal_M1[1], " (K>D: ", m1_last, ")");
+      Print("M1: Before[2] K=", stochMain_M1[2], " D=", stochSignal_M1[2], " (K>D: ", m1_before_last, ")");
       Print("M1: Before[3] K=", stochMain_M1[3], " D=", stochSignal_M1[3], " (D>K: ", m1_before3, ")");
-      Print("M5: Current K=", stochMain_M5[0], " D=", stochSignal_M5[0], " (K>D: ", m5_current, ")");
-      Print("M5: Previous K=", stochMain_M5[1], " D=", stochSignal_M5[1], " (K>D: ", m5_previous, ")");
-      Print("M15: Current K=", stochMain_M15[0], " D=", stochSignal_M15[0], " (K>D: ", m15_current, ")");
-      Print("M15: Previous K=", stochMain_M15[1], " D=", stochSignal_M15[1], " (K>D: ", m15_previous, ")");
+      Print("M1: Before[4] K=", stochMain_M1[4], " D=", stochSignal_M1[4], " (D>K: ", m1_before4, ")");
+      Print("M5: Last[1] K=", stochMain_M5[1], " D=", stochSignal_M5[1], " (K>D: ", m5_last, ")");
+      Print("M5: Before[2] K=", stochMain_M5[2], " D=", stochSignal_M5[2], " (K>D: ", m5_before_last, ")");
+      Print("M15: Last[1] K=", stochMain_M15[1], " D=", stochSignal_M15[1], " (K>D: ", m15_last, ")");
+      Print("M15: Before[2] K=", stochMain_M15[2], " D=", stochSignal_M15[2], " (K>D: ", m15_before_last, ")");
       return true;
    }
    
