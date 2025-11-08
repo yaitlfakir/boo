@@ -14,6 +14,9 @@ The EA analyzes the relationship between Stochastic %K (main line) and %D (signa
 
 A SELL position is opened only when **ALL** of the following conditions are met simultaneously:
 
+#### Stochastic Level Filter:
+- **Stochastic %K > 60** (default, configurable): Ensures entry in overbought zone for sell signals
+
 #### M1 (1-Minute) Timeframe:
 1. **Current candle [0]**: K < D (bearish momentum present)
 2. **Last candle [1]**: K < D (bearish momentum confirmed)
@@ -37,6 +40,9 @@ A SELL position is opened only when **ALL** of the following conditions are met 
 ### BUY Signal Conditions
 
 A BUY position is opened only when **ALL** of the following conditions are met simultaneously:
+
+#### Stochastic Level Filter:
+- **Stochastic %K < 40** (default, configurable): Ensures entry in oversold zone for buy signals
 
 #### M1 (1-Minute) Timeframe:
 1. **Current candle [0]**: K > D (bullish momentum present)
@@ -76,8 +82,11 @@ A BUY position is opened only when **ALL** of the following conditions are met s
 - **Position Sizing**: Automatic lot calculation based on risk percentage
 - **Fixed Stop Loss**: Configurable SL distance (default: 30 pips)
 - **Fixed Take Profit**: Configurable TP distance (default: 50 pips)
+- **Trailing Stop**: Dynamic stop loss that follows profitable positions (default: 20 pips distance)
+- **Trailing Profit**: Dynamic take profit that moves with price (default: 30 pips distance)
 - **Spread Filter**: Avoids high-spread entries (max 3 pips default)
 - **Position Limits**: Controls concurrent positions (default: 1)
+- **Stochastic Level Filters**: BUY only when %K < 40, SELL only when %K > 60
 
 ### Trading Controls
 - **Time Filter**: Optional trading hours restriction
@@ -109,6 +118,20 @@ A BUY position is opened only when **ALL** of the following conditions are met s
 - **TakeProfitPips** (default: 50.0): Take profit distance in pips (1.67:1 reward/risk)
 - **MaxSpreadPips** (default: 3.0): Maximum acceptable spread in pips
 
+#### Stochastic Filters
+- **BuyStochLevel** (default: 40.0): Buy only when Stochastic %K is below this level (oversold)
+- **SellStochLevel** (default: 60.0): Sell only when Stochastic %K is above this level (overbought)
+
+#### Trailing Stop Settings
+- **UseTrailingStop** (default: true): Enable/disable trailing stop functionality
+- **TrailingStopPips** (default: 20.0): Distance of trailing stop from current price (in pips)
+- **TrailingStepPips** (default: 5.0): Minimum price movement before updating trailing stop (in pips)
+
+#### Trailing Profit Settings
+- **UseTrailingProfit** (default: true): Enable/disable trailing take profit functionality
+- **TrailingProfitPips** (default: 30.0): Distance of trailing take profit from current price (in pips)
+- **TrailingProfitStep** (default: 5.0): Minimum price movement before updating trailing profit (in pips)
+
 #### Position Management
 - **MagicNumber** (default: 987654): Unique identifier for EA's trades
 - **TradeComment** (default: "MTFStochScalp"): Comment added to all trades
@@ -134,6 +157,12 @@ MaxPositions: 1
 UseTimeFilter: true
 StartHour: 8
 EndHour: 18
+BuyStochLevel: 40.0
+SellStochLevel: 60.0
+UseTrailingStop: true
+TrailingStopPips: 20.0
+UseTrailingProfit: true
+TrailingProfitPips: 30.0
 ```
 
 ### Moderate (Balanced Risk)
@@ -147,6 +176,12 @@ MaxPositions: 1
 UseTimeFilter: true
 StartHour: 7
 EndHour: 20
+BuyStochLevel: 40.0
+SellStochLevel: 60.0
+UseTrailingStop: true
+TrailingStopPips: 20.0
+UseTrailingProfit: true
+TrailingProfitPips: 30.0
 ```
 
 ### Aggressive (Higher Risk - Experienced Traders Only)
@@ -158,6 +193,12 @@ TakeProfitPips: 45
 MaxSpreadPips: 3.5
 MaxPositions: 2
 UseTimeFilter: false (trade 24/5)
+BuyStochLevel: 35.0 (more aggressive entry)
+SellStochLevel: 65.0 (more aggressive entry)
+UseTrailingStop: true
+TrailingStopPips: 15.0 (tighter trail)
+UseTrailingProfit: true
+TrailingProfitPips: 25.0
 ```
 
 ## Usage Guide
@@ -192,14 +233,15 @@ When a signal is detected, the EA logs detailed information:
 **Example SELL Signal:**
 ```
 ===== SELL SIGNAL DETECTED =====
-M1: Current K=45.2 D=48.5 (K<D: true)
-M1: Last K=44.8 D=47.1 (K<D: true)
+Stochastic Level Check: K=65.3 > 60.0 (true)
+M1: Current K=65.3 D=68.5 (K<D: true)
+M1: Last K=64.8 D=67.1 (K<D: true)
 M1: Before[2] K=52.3 D=49.6 (D<K: true)
 M1: Before[3] K=55.1 D=51.2 (D<K: true)
-M5: Current K=43.5 D=46.8 (K<D: true)
-M5: Previous K=42.9 D=45.3 (K<D: true)
-M15: Current K=41.2 D=44.5 (K<D: true)
-M15: Previous K=40.8 D=43.9 (K<D: true)
+M5: Current K=63.5 D=66.8 (K<D: true)
+M5: Previous K=62.9 D=65.3 (K<D: true)
+M15: Current K=61.2 D=64.5 (K<D: true)
+M15: Previous K=60.8 D=63.9 (K<D: true)
 
 SELL order opened successfully.
   Lot Size: 0.10
@@ -228,6 +270,24 @@ SELL order opened successfully.
    - Only trades when all three timeframes show consistent momentum
    - This confluence creates high-probability setups
    - Filters out low-quality signals that only appear on one timeframe
+
+4. **Stochastic Level Filtering**:
+   - BUY signals require %K < 40 (oversold zone)
+   - SELL signals require %K > 60 (overbought zone)
+   - Ensures entries at favorable momentum extremes
+   - Increases probability of mean reversion or trend continuation
+
+5. **Trailing Stop Management**:
+   - Automatically moves stop loss to lock in profits
+   - Follows price movement without manual intervention
+   - Only activates when position is profitable
+   - Protects gains while allowing profits to run
+
+6. **Trailing Profit Management**:
+   - Dynamically adjusts take profit as price moves favorably
+   - Maximizes profit potential during strong trends
+   - Prevents premature exits while managing risk
+   - Complements trailing stop for comprehensive position management
 
 ### Signal Rarity
 
@@ -357,6 +417,9 @@ Before live trading:
 ✅ **Fully automated scalping** based on multi-timeframe stochastic analysis
 ✅ **High-quality signals** with strict multi-timeframe confirmation
 ✅ **Crossover detection** with momentum verification on M1
+✅ **Stochastic level filtering** - BUY when %K < 40, SELL when %K > 60
+✅ **Trailing stop** - Automatically locks in profits as price moves favorably
+✅ **Trailing profit** - Dynamically adjusts take profit for maximum gains
 ✅ **Risk management** with automatic position sizing and SL/TP
 ✅ **Detailed logging** of all signal conditions for transparency
 
