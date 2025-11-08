@@ -31,6 +31,9 @@ A fully automated Bitcoin trading EA using Stochastic Oscillator (19,7,3). Opens
 ### 9. MACrossoverEA - 4 Moving Average Crossover Strategy ⭐ NEW
 An automated trading EA using 4 Moving Averages (MA19, MA38, MA58, MA209) for precise trend detection. Opens BUY when MA19 > MA38 > MA58 < MA209, SELL when MA58 > MA38 > MA19 > MA209. Features trailing stop and take profit functionality. Designed for M1 (1-minute) timeframe.
 
+### 10. MultiTimeframeStochasticScalpingEA - Advanced Multi-Timeframe Scalping ⭐ NEW
+A sophisticated scalping EA that analyzes Stochastic indicators across M1, M5, and M15 timeframes simultaneously. Opens positions only when all three timeframes show precise stochastic alignment (K<D or K>D patterns with crossover confirmation). Features strict multi-timeframe confirmation for high-quality signals and comprehensive risk management.
+
 ---
 
 ## TradingManager
@@ -1506,6 +1509,280 @@ See [MA_CROSSOVER_QUICKSTART.md](MA_CROSSOVER_QUICKSTART.md) for:
 - Ensure StopLossPips meets broker requirements
 - Check if market is open
 - Review error messages in Experts tab
+
+---
+
+## MultiTimeframeStochasticScalpingEA
+
+### Overview
+**MultiTimeframeStochasticScalpingEA** is a sophisticated scalping Expert Advisor that requires precise stochastic alignment across M1, M5, and M15 timeframes before opening positions. By demanding confirmation from three different timeframes simultaneously, this strategy filters out low-quality signals and focuses on high-probability trading opportunities with strong multi-timeframe momentum confirmation.
+
+### Trading Strategy
+
+The EA uses a strict multi-timeframe approach to identify momentum shifts:
+
+**SELL Signal Requirements (ALL must be true):**
+- **M1 Timeframe**: 
+  - Current candle: K < D (bearish momentum)
+  - Last candle: K < D (confirmation)
+  - Candle [2] before: D < K (previous bullish)
+  - Candle [3] before: D < K (earlier bullish)
+- **M5 Timeframe**:
+  - Current candle: K < D
+  - Previous candle: K < D
+- **M15 Timeframe**:
+  - Current candle: K < D
+  - Previous candle: K < D
+
+**BUY Signal Requirements (opposite pattern):**
+- All K>D conditions instead of K<D
+- Shows crossover from bearish to bullish momentum
+- Confirmed across all three timeframes
+
+### Key Features
+
+#### Strict Multi-Timeframe Confirmation
+- **Three Timeframe Analysis**: Simultaneous evaluation of M1, M5, and M15
+- **Crossover Detection**: M1 shows recent momentum shift with 4-candle analysis
+- **Higher Timeframe Confirmation**: M5 and M15 verify the direction
+- **Signal Quality**: Only trades when all timeframes align perfectly
+
+#### Scalping Optimized
+- **M1 Primary Timeframe**: Fast signal detection
+- **Risk Management**: 30 pip SL, 50 pip TP (1.67:1 R:R)
+- **Spread Filter**: Avoids high-spread conditions
+- **Position Limits**: Controls concurrent positions
+
+#### Advanced Entry Logic
+- **4-Candle Pattern on M1**: Detects genuine crossovers, not noise
+- **2-Candle Confirmation**: M5 and M15 require consistent momentum
+- **No Repainting**: Uses only confirmed candle data
+- **Detailed Logging**: Complete signal breakdown in Experts tab
+
+### Installation
+
+1. Open MetaTrader 5
+2. Click `File` → `Open Data Folder`
+3. Navigate to `MQL5/Experts/`
+4. Copy `MultiTimeframeStochasticScalpingEA.mq5` to this folder
+5. Restart MetaTrader 5 or click `Refresh` in Navigator
+6. The EA appears under "Expert Advisors" in Navigator
+
+### Quick Start Configuration
+
+#### Conservative (Recommended for Beginners)
+- **Timeframe**: M1 (attach EA to M1 chart - CRITICAL!)
+- **RiskPercent**: 0.5%
+- **StopLossPips**: 30
+- **TakeProfitPips**: 50
+- **MaxSpreadPips**: 2.0
+- **MaxPositions**: 1
+- **UseTimeFilter**: true (8:00-18:00)
+
+#### Moderate (Balanced Risk)
+- **Timeframe**: M1 (attach EA to M1 chart - CRITICAL!)
+- **RiskPercent**: 1.0%
+- **StopLossPips**: 30
+- **TakeProfitPips**: 50
+- **MaxSpreadPips**: 3.0
+- **MaxPositions**: 1
+- **UseTimeFilter**: true (7:00-20:00)
+
+#### Aggressive (Higher Risk - Experienced Only)
+- **Timeframe**: M1 (attach EA to M1 chart - CRITICAL!)
+- **RiskPercent**: 2.0%
+- **StopLossPips**: 25
+- **TakeProfitPips**: 45
+- **MaxSpreadPips**: 3.5
+- **MaxPositions**: 2
+- **UseTimeFilter**: false (24/5 trading)
+
+### Usage
+
+1. **Attach to Chart**:
+   - Open any major currency pair chart (EURUSD, GBPUSD, USDJPY recommended)
+   - **CRITICAL: Set timeframe to M1 (1-minute)**
+   - Drag and drop MultiTimeframeStochasticScalpingEA from Navigator to chart
+
+2. **Configure Settings**:
+   - Adjust parameters based on your risk tolerance
+   - Start with Conservative settings for testing
+   - Keep default stochastic parameters (14, 3, 3) initially
+
+3. **Enable Auto Trading**:
+   - Click "AutoTrading" button in toolbar (or press Alt+A)
+   - Verify green checkmark appears in top-right corner
+   - Check Experts tab for initialization message
+
+4. **Monitor Performance**:
+   - Watch Experts tab for detailed signal detection logs
+   - Review open positions in Trade tab
+   - Monitor closed trades in History tab
+
+### Understanding the Signals
+
+When a signal is detected, the EA provides detailed logging:
+
+```
+===== SELL SIGNAL DETECTED =====
+M1: Current K=45.2 D=48.5 (K<D: true)
+M1: Last K=44.8 D=47.1 (K<D: true)
+M1: Before[2] K=52.3 D=49.6 (D<K: true)
+M1: Before[3] K=55.1 D=51.2 (D<K: true)
+M5: Current K=43.5 D=46.8 (K<D: true)
+M5: Previous K=42.9 D=45.3 (K<D: true)
+M15: Current K=41.2 D=44.5 (K<D: true)
+M15: Previous K=40.8 D=43.9 (K<D: true)
+
+SELL order opened successfully.
+  Lot Size: 0.10
+  Entry Price: 1.10450
+  Stop Loss: 1.10750
+  Take Profit: 1.09950
+```
+
+### Strategy Testing
+
+To backtest the EA:
+1. Press Ctrl+R to open Strategy Tester
+2. Select "MultiTimeframeStochasticScalpingEA" from Expert Advisor list
+3. Choose symbol (EURUSD recommended)
+4. **Select M1 (1-minute) timeframe** (CRITICAL!)
+5. Set date range (minimum 3 months)
+6. Select "Every tick" model for accuracy
+7. Configure input parameters
+8. Click "Start" to run backtest
+
+### Documentation
+
+See [MULTITIMEFRAME_STOCHASTIC_SCALPING_EA.md](MULTITIMEFRAME_STOCHASTIC_SCALPING_EA.md) for comprehensive documentation including:
+- Detailed strategy explanation with examples
+- Complete parameter descriptions
+- Multi-timeframe logic breakdown
+- Configuration profiles for different risk levels
+- Trading examples with signal breakdowns
+- Troubleshooting guide
+- Best practices and optimization tips
+
+See [MULTITIMEFRAME_STOCHASTIC_SCALPING_QUICKSTART.md](MULTITIMEFRAME_STOCHASTIC_SCALPING_QUICKSTART.md) for:
+- 5-minute setup guide
+- Quick reference for all parameters
+- Common questions and answers
+- Troubleshooting checklist
+- Performance expectations
+
+### Important Notes
+
+✅ **This EA Provides**:
+- Fully automated scalping based on multi-timeframe stochastic analysis
+- Strict signal confirmation across M1, M5, and M15 timeframes
+- Crossover detection with momentum verification (4-candle pattern on M1)
+- Risk-based position sizing with configurable SL/TP
+- Detailed signal logging for transparency
+- Spread filter and position limits
+
+❌ **This EA Does NOT**:
+- Guarantee profits or eliminate losses
+- Generate high-frequency signals (quality over quantity)
+- Work on timeframes other than M1 without modification
+- Handle news events automatically
+- Use grid or martingale strategies
+
+### Signal Characteristics
+
+**Expected Signal Frequency**: 5-20 trades per day (highly variable)
+- Depends on market conditions and volatility
+- Signals are intentionally rare for quality
+- Long periods without trades are normal
+- Patience is essential
+
+**Signal Quality**: High (due to multi-timeframe confirmation)
+- All three timeframes must align
+- Reduces false signals from single timeframe noise
+- Better win rate but lower trade frequency
+- Focus on probability over quantity
+
+### Best Practices
+
+**Setup**:
+- **MUST attach to M1 chart** (EA analyzes M1, M5, M15 internally)
+- Test on demo for 30+ days minimum
+- Use major pairs with low spreads (EURUSD, GBPUSD, USDJPY)
+- Start with conservative risk (0.5%)
+- Use VPS for 24/7 operation
+
+**Risk Management**:
+- Never risk more than 2% per trade
+- Keep MaxPositions at 1 initially
+- Monitor spread conditions regularly
+- Don't remove or modify stop losses
+- Test any parameter changes on demo first
+
+**Monitoring**:
+- Check Experts tab for signal details
+- Review why signals are or aren't appearing
+- Track win rate and profit factor
+- Be patient - signals are selective
+- Understand the strategy logic
+
+### Risk Warnings
+
+⚠️ **CRITICAL DISCLAIMERS**:
+
+**High Risk Trading**:
+- Forex trading carries substantial risk of loss
+- M1 scalping can generate frequent trades with spread costs
+- You can lose 100% of your trading capital
+- Past performance does not guarantee future results
+
+**Strategy-Specific Risks**:
+- Signals are rare due to strict multi-timeframe requirements
+- Long periods without trades are normal (don't panic)
+- Requires low spread environment for profitability
+- Slippage and execution quality critical on M1 timeframe
+- Not suitable for all market conditions
+
+**Required Actions**:
+1. Test extensively on demo account (30+ days MANDATORY)
+2. Start with 0.5% risk and conservative settings
+3. Use only on major pairs with low spreads
+4. Monitor performance daily
+5. Accept all trading risks and responsibilities
+
+**No Guarantees**:
+- This EA does not guarantee profits
+- Multi-timeframe confirmation improves quality but doesn't eliminate risk
+- Market conditions can change rapidly
+- Always use proper risk management
+
+### Troubleshooting
+
+**EA Not Trading**:
+- Verify AutoTrading is enabled (green checkmark)
+- Confirm chart timeframe is M1 (CRITICAL!)
+- Check spread is acceptable (< MaxSpreadPips)
+- Review Experts tab for specific messages
+- Be patient - signals require perfect alignment
+
+**No Signals for Extended Period**:
+- This is NORMAL - strategy is highly selective
+- Verify EA is running (check Experts tab)
+- Review current stochastic values manually
+- Try different currency pair
+- Market may be consolidating (strategy needs trends)
+
+**Orders Rejected**:
+- Check account balance and free margin
+- Verify lot size is within broker limits
+- Ensure stop loss meets broker requirements
+- Confirm market is open and liquid
+- Review error codes in Experts tab
+
+**High Spread Messages**:
+- Current spread exceeds MaxSpreadPips setting
+- Wait for active trading hours (European/US session)
+- Consider slightly increasing MaxSpreadPips (max 4.0)
+- Check if broker spreads are competitive
 
 ---
 
