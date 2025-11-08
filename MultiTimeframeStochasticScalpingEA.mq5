@@ -143,9 +143,9 @@ void OnTick()
    if(CopyBuffer(handleStoch_M5, 0, 0, 3, stochMain_M5) < 3) return;      // Main line (K)
    if(CopyBuffer(handleStoch_M5, 1, 0, 3, stochSignal_M5) < 3) return;    // Signal line (D)
    
-   //--- Copy stochastic data for M15 (need 3 candles: 1=last completed, 2=before last)
-   if(CopyBuffer(handleStoch_M15, 0, 0, 3, stochMain_M15) < 3) return;    // Main line (K)
-   if(CopyBuffer(handleStoch_M15, 1, 0, 3, stochSignal_M15) < 3) return;  // Signal line (D)
+   //--- Copy stochastic data for M15 (need 2 candles: 1=last completed)
+   if(CopyBuffer(handleStoch_M15, 0, 0, 3, stochMain_M15) < 2) return;    // Main line (K)
+   if(CopyBuffer(handleStoch_M15, 1, 0, 3, stochSignal_M15) < 2) return;  // Signal line (D)
    
    //--- Check if we can open new positions
    if(CountOpenPositions() >= MaxPositions)
@@ -296,11 +296,9 @@ bool CheckSellSignal()
    
    //--- M15 Conditions (using completed candles only):
    //    1. Last completed candle (1): K < D
-   //    2. Before last candle (2): K < D
    bool m15_last = stochMain_M15[1] < stochSignal_M15[1];
-   bool m15_before_last = stochMain_M15[2] < stochSignal_M15[2];
    
-   bool m15_condition = m15_last && m15_before_last;
+   bool m15_condition = m15_last;
    
    //--- Check stochastic level: must be > 60 for sell signal (using last completed candle)
    bool stoch_level_ok = stochMain_M1[1] > SellStochLevel;
@@ -317,7 +315,6 @@ bool CheckSellSignal()
       Print("M5: Last[1] K=", stochMain_M5[1], " D=", stochSignal_M5[1], " (K<D: ", m5_last, ")");
       Print("M5: Before[2] K=", stochMain_M5[2], " D=", stochSignal_M5[2], " (K<D: ", m5_before_last, ")");
       Print("M15: Last[1] K=", stochMain_M15[1], " D=", stochSignal_M15[1], " (K<D: ", m15_last, ")");
-      Print("M15: Before[2] K=", stochMain_M15[2], " D=", stochSignal_M15[2], " (K<D: ", m15_before_last, ")");
       return true;
    }
    
@@ -350,11 +347,9 @@ bool CheckBuySignal()
    
    //--- M15 Conditions (using completed candles only):
    //    1. Last completed candle (1): K > D
-   //    2. Before last candle (2): K > D
    bool m15_last = stochMain_M15[1] > stochSignal_M15[1];
-   bool m15_before_last = stochMain_M15[2] > stochSignal_M15[2];
    
-   bool m15_condition = m15_last && m15_before_last;
+   bool m15_condition = m15_last;
    
    //--- Check stochastic level: must be < 40 for buy signal (using last completed candle)
    bool stoch_level_ok = stochMain_M1[1] < BuyStochLevel;
@@ -371,7 +366,6 @@ bool CheckBuySignal()
       Print("M5: Last[1] K=", stochMain_M5[1], " D=", stochSignal_M5[1], " (K>D: ", m5_last, ")");
       Print("M5: Before[2] K=", stochMain_M5[2], " D=", stochSignal_M5[2], " (K>D: ", m5_before_last, ")");
       Print("M15: Last[1] K=", stochMain_M15[1], " D=", stochSignal_M15[1], " (K>D: ", m15_last, ")");
-      Print("M15: Before[2] K=", stochMain_M15[2], " D=", stochSignal_M15[2], " (K>D: ", m15_before_last, ")");
       return true;
    }
    
