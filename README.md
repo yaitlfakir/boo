@@ -4,35 +4,260 @@ A collection of Expert Advisors (EAs) for MetaTrader 5, including automated trad
 
 ## Available Expert Advisors
 
-### 1. TradingManager - Complete Trading Dashboard & Control Center ⭐ NEW
+### 1. ExpertTradeManager - Trade Manager with Auto Break-Even & Trailing ⭐ NEW
+A focused Expert Advisor that automatically manages your trades with intelligent break-even protection and tight trailing stop functionality. Once a trade becomes profitable, it automatically moves the stop loss to break-even (locking in minimum profit), then trails the price closely to maximize gains while protecting your profits. Perfect for traders who want automated position management without complex dashboards.
+
+### 2. TradingManager - Complete Trading Dashboard & Control Center
 A comprehensive trading dashboard with one-click controls, real-time indicators, stochastic alerts, and advanced position management. Features visual trend display, support/resistance detection, buttons to open multiple trades, close profitable positions, and set break-even - all from an intuitive dashboard interface.
 
-### 2. EurusdPredictorEA - EURUSD Price Movement Predictor
+### 3. EurusdPredictorEA - EURUSD Price Movement Predictor
 A specialized signal-generating EA for EURUSD that predicts price movement using multi-indicator analysis and displays clear UP/DOWN signals on the chart. Perfect for traders who want intelligent signal assistance without automated trading.
 
-### 3. BitcoinTradingEA - Automated Bitcoin Trading Robot
+### 4. BitcoinTradingEA - Automated Bitcoin Trading Robot
 An automated trading EA specifically designed for Bitcoin (BTCUSD) with cryptocurrency-optimized volatility management, dynamic stops, and trend filtering.
 
-### 4. ScalpingEA - Automated Scalping with Risk Management
+### 5. ScalpingEA - Automated Scalping with Risk Management
 An automated trading EA that uses scalping strategies with comprehensive risk management.
 
-### 5. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
+### 6. MultiTimeframeSignalEA - Buy/Sell Signal Indicator
 A signal-generating EA that analyzes multiple timeframes to display buy and sell signals on the chart.
 
-### 6. TrailingManager - Comprehensive Trading & Risk Management
+### 7. TrailingManager - Comprehensive Trading & Risk Management
 An advanced EA that combines automatic position opening with sophisticated trailing stop, break-even, and trailing take-profit management. Features comprehensive risk controls including daily loss limits, position limits, and intelligent trade entry.
 
-### 7. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
+### 8. StochasticSellEA - Automated Sell Trading with Stochastic Crossover
 An automated trading EA that opens SELL positions based on Stochastic Oscillator crossover above 60 level, combined with momentum reversal and Moving Average confirmation.
 
-### 8. BTCStochasticEA - Bitcoin Trading with Stochastic (19,7,3) ⭐ NEW
+### 9. BTCStochasticEA - Bitcoin Trading with Stochastic (19,7,3)
 A fully automated Bitcoin trading EA using Stochastic Oscillator (19,7,3). Opens BUY when %K crosses above %D, SELL when %K crosses below %D. Features Bitcoin-optimized risk management with ATR-based dynamic stops and trailing stop functionality.
 
-### 9. MACrossoverEA - 4 Moving Average Crossover Strategy ⭐ NEW
+### 10. MACrossoverEA - 4 Moving Average Crossover Strategy
 An automated trading EA using 4 Moving Averages (MA19, MA38, MA58, MA209) for precise trend detection. Opens BUY when MA19 > MA38 > MA58 < MA209, SELL when MA58 > MA38 > MA19 > MA209. Features trailing stop and take profit functionality. Designed for M1 (1-minute) timeframe.
 
-### 10. MultiTimeframeStochasticScalpingEA - Advanced Multi-Timeframe Scalping ⭐ NEW
+### 11. MultiTimeframeStochasticScalpingEA - Advanced Multi-Timeframe Scalping
 A sophisticated scalping EA that analyzes Stochastic indicators across M1, M5, and M15 timeframes simultaneously. Opens positions only when all three timeframes show precise stochastic alignment (K<D or K>D patterns with crossover confirmation). Features strict multi-timeframe confirmation for high-quality signals and comprehensive risk management.
+
+---
+
+## ExpertTradeManager
+
+### Overview
+**ExpertTradeManager** is a specialized EA designed to solve one of the most critical challenges in trading: managing positions effectively. This EA automatically moves your stop loss to break-even once trades become profitable, then trails the price closely to maximize gains while protecting your capital. Perfect for traders who want professional-grade position management without the complexity.
+
+### Key Features
+
+#### Automatic Break-Even Protection
+- **Smart Trigger**: Activates when trade reaches configurable profit (default: 15 pips)
+- **Profit Lock**: Moves stop loss to entry price + small buffer (default: +2 pips)
+- **Zero Risk**: Once triggered, guarantees minimum profit even if market reverses
+- **One-Way Only**: Stop loss only moves in favorable direction, never against you
+
+#### Close Profit Trailing
+- **Follows Price**: Automatically adjusts SL as price moves in your favor
+- **Configurable Distance**: Set trailing distance from current price (default: 10 pips)
+- **Start Threshold**: Begins trailing after minimum profit (default: 20 pips)
+- **Step Control**: Updates only when price moves significantly (default: 5 pips)
+- **Maximum Protection**: Locks in the most profit possible before reversal
+
+#### Automated Trading Strategy
+- **MA Crossover Entry**: Opens positions on Fast EMA / Slow EMA crossovers
+- **RSI Filter**: Confirms momentum with RSI indicator
+- **Risk-Based Sizing**: Automatically calculates lot size based on account risk percentage
+- **Smart Filters**: Spread check, time filter, max positions limit
+
+#### Complete Risk Management
+- **Position Sizing**: Automatic lot calculation (default: 1% risk per trade)
+- **Initial SL/TP**: Every trade opens with protective stop loss and profit target
+- **Maximum Positions**: Limits concurrent trades (default: 3)
+- **Spread Filter**: Avoids trading during high spread periods
+- **Trading Hours**: Optional time restrictions (default: 8:00-20:00 server time)
+
+### Installation
+
+1. Open MetaTrader 5
+2. Click `File` → `Open Data Folder`
+3. Navigate to `MQL5/Experts/`
+4. Copy `ExpertTradeManager.mq5` to this folder
+5. Restart MetaTrader 5 or click `Refresh` in Navigator
+6. The EA appears under "Expert Advisors" in Navigator
+
+### Quick Start Configuration
+
+#### For Conservative Trading (Recommended for Beginners)
+- **RiskPercent**: 0.5%
+- **StopLossPips**: 40
+- **TakeProfitPips**: 80
+- **BreakEvenPips**: 20
+- **TrailingStopPips**: 15
+- **MaxOpenPositions**: 1
+- **Timeframe**: H1 or H4
+
+#### For Balanced Trading
+- **RiskPercent**: 1.0%
+- **StopLossPips**: 30
+- **TakeProfitPips**: 60
+- **BreakEvenPips**: 15
+- **TrailingStopPips**: 10
+- **MaxOpenPositions**: 2
+- **Timeframe**: H1
+
+#### For Active Trading
+- **RiskPercent**: 2.0%
+- **StopLossPips**: 25
+- **TakeProfitPips**: 50
+- **BreakEvenPips**: 10
+- **TrailingStopPips**: 8
+- **MaxOpenPositions**: 3
+- **Timeframe**: M30 or H1
+
+### Usage
+
+1. **Attach to Chart**:
+   - Open any major currency pair chart (EURUSD, GBPUSD, USDJPY recommended)
+   - Recommended timeframe: **H1** (1 hour) for balanced trading
+   - Drag and drop ExpertTradeManager from Navigator to chart
+
+2. **Configure Settings**:
+   - Adjust parameters based on your trading style and risk tolerance
+   - Start with conservative settings if new to the EA
+   - Enable break-even and trailing stop features (recommended)
+
+3. **Enable Auto Trading**:
+   - Click "AutoTrading" button in toolbar (or press Alt+A)
+   - Verify green checkmark appears in top-right corner
+   - Check Experts tab for initialization message
+
+4. **Monitor Operation**:
+   - Watch Experts tab for entry signals and position management actions
+   - Observe break-even triggers when trades become profitable
+   - See trailing stop adjustments as profits grow
+   - Track closed trades in History tab
+
+### How the Position Management Works
+
+**Example Trade Flow:**
+
+1. **Trade Opens**: BUY EURUSD at 1.1000
+   - Initial SL: 1.0970 (-30 pips)
+   - Initial TP: 1.1060 (+60 pips)
+
+2. **Price Moves to 1.1015** (+15 pips profit)
+   - ✅ **Break-Even Activates**
+   - SL moves from 1.0970 to 1.1002 (entry + 2 pips)
+   - Now guaranteed minimum +2 pips profit
+
+3. **Price Moves to 1.1020** (+20 pips profit)
+   - ✅ **Trailing Stop Starts**
+   - SL moves to 1.1010 (current price 1.1020 - 10 pips)
+   - Locked in +10 pips profit
+
+4. **Price Moves to 1.1035** (+35 pips profit)
+   - ✅ **Trailing Stop Follows**
+   - SL moves to 1.1025 (current price 1.1035 - 10 pips)
+   - Locked in +25 pips profit
+
+5. **Price Reverses to 1.1025**
+   - Stop loss hit at 1.1025
+   - Trade closes with **+25 pips profit**
+   - Maximum profit protected by trailing stop
+
+### Trading Strategy
+
+**Entry Signals:**
+- **BUY**: Fast MA crosses above Slow MA + RSI not overbought
+- **SELL**: Fast MA crosses below Slow MA + RSI not oversold
+
+**Position Management:**
+1. Opens position with risk-calculated lot size
+2. Sets initial SL and TP
+3. Monitors every tick for break-even trigger
+4. Activates trailing stop when sufficient profit
+5. Follows price to maximize gains
+6. Closes at TP or trailing SL
+
+### Documentation
+
+See [EXPERT_TRADE_MANAGER.md](EXPERT_TRADE_MANAGER.md) for comprehensive documentation including:
+- Detailed feature explanations
+- Complete parameter descriptions
+- Configuration profiles for different risk levels
+- Trade management examples
+- Troubleshooting guide
+- Best practices and optimization tips
+
+See [EXPERT_TRADE_MANAGER_QUICKSTART.md](EXPERT_TRADE_MANAGER_QUICKSTART.md) for:
+- 5-minute setup guide
+- Quick parameter reference
+- Common issues and solutions
+- Success tips
+
+### Important Notes
+
+✅ **This EA Provides**:
+- Fully automated position management with break-even and trailing
+- Protects capital by eliminating risk once profitable
+- Maximizes profits through intelligent trailing stop
+- Professional-grade trade management without complexity
+- Clear, easy-to-understand operation with detailed logging
+
+❌ **This EA Does NOT**:
+- Guarantee profits or eliminate all trading risks
+- Work without proper testing (demo first!)
+- Replace sound trading knowledge and risk management
+- Perform well in all market conditions (best in trending markets)
+
+### Best Practices
+
+**Position Management:**
+- Let break-even protect your trades automatically
+- Don't disable trailing stop - it maximizes profits
+- Monitor Experts tab to see management actions
+- Trust the system - it's designed to lock in maximum profit
+
+**Risk Management:**
+- Always use proper position sizing (1% risk recommended)
+- Never disable stop losses
+- Test on demo for 30+ days before live trading
+- Start with conservative settings
+- Use VPS for 24/7 operation
+
+**Monitoring:**
+- Check Experts tab regularly for signals and actions
+- Verify break-even triggers are working
+- Observe trailing stop adjustments
+- Track win rate and profit factor
+- Adjust parameters based on results (test changes on demo first)
+
+### Risk Warnings
+
+⚠️ **CRITICAL DISCLAIMERS**:
+- **High Risk**: Trading carries substantial risk of loss
+- **Demo Testing Required**: ALWAYS test extensively on demo accounts first (30+ days minimum)
+- **No Guarantee**: This EA does not guarantee profits
+- **Your Responsibility**: All trading decisions and risks are yours
+- **Not Financial Advice**: This EA is for educational purposes only
+- **Proper Risk Management**: Use appropriate position sizing and never risk more than you can afford to lose
+
+### Troubleshooting
+
+**EA not trading:**
+- Verify AutoTrading is enabled (green checkmark)
+- Wait for MA crossover signal (be patient)
+- Check spread is acceptable (< MaxSpreadPips)
+- Verify within trading hours if time filter enabled
+- Check Experts tab for messages
+
+**Break-even not working:**
+- Ensure UseBreakEven = true in settings
+- Verify position has reached BreakEvenPips profit (default 15 pips)
+- Check Experts tab for break-even trigger messages
+- Confirm broker allows SL modifications
+
+**Trailing stop not activating:**
+- Ensure UseTrailingStop = true in settings
+- Verify profit has reached TrailingStartPips (default 20 pips)
+- Check price has moved by at least TrailingStep (default 5 pips)
+- Look for trailing messages in Experts tab
 
 ---
 
